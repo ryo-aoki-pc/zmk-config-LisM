@@ -1,0 +1,4064 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>キー割り当て一覧</title>
+<style>
+  body {
+    font-family: -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN",
+                 "Noto Sans JP", Meiryo, sans-serif;
+    line-height: 1.6;
+    color: #1f2328;
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+  h1 { border-bottom: 2px solid #d0d7de; padding-bottom: .3em; }
+  h2 { border-bottom: 1px solid #d0d7de; padding-bottom: .3em; margin-top: 2em; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0 2em;
+    font-size: 13px;
+  }
+  th, td {
+    border: 1px solid #d0d7de;
+    padding: 4px 8px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;   /* セル内は自動折り返しせず、明示的な改行(<br>)のみで改行する */
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+  }
+  thead th { background: #f6f8fa; position: sticky; top: 0; }
+  /* 複数行セルは各行を左揃え、ブロック自体はセル内で中央に配置する。 */
+  span.ml { display: inline-block; text-align: left; }
+  /* Layer separator row inside the merged per-mode table. */
+  tr.layer-row th {
+    background: #e1ecf4;
+    text-align: left;
+    font-size: 14px;
+    padding: 8px;
+  }
+  /* "Row N" heading rows are highlighted via inline background-color. */
+  code {
+    background: rgba(175,184,193,.2);
+    padding: .1em .3em;
+    border-radius: 4px;
+    font-size: 85%;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  tr[style] code { background: rgba(0,0,0,.06); }
+  /* Visual physical-layout figure: keys absolutely positioned by their real
+     coordinates so the rendering matches the board (split gap, column stagger,
+     rotation, …). */
+  .kb { position: relative; margin: 1em 0 2.5em; }
+  .key {
+    position: absolute;
+    box-sizing: border-box;
+    border: 1px solid #b9c0c8;
+    border-radius: 7px;
+    background: linear-gradient(180deg, #ffffff 0%, #eef1f4 100%);
+    box-shadow: inset 0 1px 0 #ffffff, inset 0 -2px 1px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 2px;
+    text-align: center;
+    font-family: -apple-system, "Segoe UI", "Noto Sans JP", Meiryo, sans-serif;
+    line-height: 1.1;
+    cursor: default;
+  }
+  .key .kl { font-size: 8px; color: #8a939b; align-self: flex-start; max-width: 100%; overflow: hidden; }
+  .key .kt { font-size: 12px; font-weight: 600; color: #1f2328; max-width: 100%; overflow: hidden; }
+  .key .kh { font-size: 9px; color: #0969da; max-width: 100%; overflow: hidden; }
+  .key.none { background: #f0f1f2; border-style: dashed; opacity: .45; box-shadow: none; }
+  .key.trans { background: #f7f8fa; }
+  .key.trans .kt { color: #8a939b; font-weight: 400; }
+  /* Extra-op figures (Tap Dance / Mod Morph): keys without a distinct assignment. */
+  .key.dim { background: #fafbfc; border-style: dashed; border-color: #d8dde2; opacity: .4; box-shadow: none; }
+  .key.dim .kl { color: #b1b8be; }
+</style>
+</head>
+<body>
+<h1>キー割り当て一覧</h1>
+<p>※ 10 個のレイヤーのキー割り当てを 1 ファイルに集約。各レイヤーを実機の物理配列に合わせて「動作」セクションでまとめてから「経路」セクションに進む。</p>
+<ul>
+<li>各 row セクション行に「キーラベル」と「バインディング (<code>&amp;...</code>)」の 2 段表示でキー位置を示す。</li>
+<li>列は物理配列の左→右順。左右分割は中央の空列で分離する。</li>
+<li>各表の左端 1 列が「操作」（タップ / ホールド / ダブルタップ / Shift+ / Ctrl+）または「Row N」見出し。</li>
+</ul>
+<h2>レイアウト図</h2>
+<p>各レイヤーを実機の物理配列どおりに配置。各キーは「ラベル / タップ動作 / (ホールド動作)」を表示し、全操作（ダブルタップ / Shift+ / Ctrl+ など）はマウスオーバーのツールチップで確認できる。Tap Dance / Mod Morph の割り当てがあるレイヤーには、その操作専用の図を追加表示する（割り当てのないキーは薄い枠のみ）。</p>
+<h3>BASE_QWERTY レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key" style="left:0px;top:0px;width:48px;height:48px" title="タップ: Q&#10;ホールド: Q&#10;ダブルタップ: Q×2&#10;Shift+: ⇧Q&#10;Ctrl+: ⌃Q&#10;&amp;kp Q"><span class="kt">Q</span></div>
+<div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: W&#10;ホールド: W&#10;ダブルタップ: W×2&#10;Shift+: ⇧W&#10;Ctrl+: ⌃W&#10;&amp;kp W"><span class="kt">W</span></div>
+<div class="key" style="left:104px;top:0px;width:48px;height:48px" title="タップ: E&#10;ホールド: E&#10;ダブルタップ: E×2&#10;Shift+: ⇧E&#10;Ctrl+: ⌃E&#10;&amp;kp E"><span class="kt">E</span></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="タップ: R&#10;ホールド: R&#10;ダブルタップ: R×2&#10;Shift+: ⇧R&#10;Ctrl+: ⌃R&#10;&amp;kp R"><span class="kt">R</span></div>
+<div class="key" style="left:208px;top:0px;width:48px;height:48px" title="タップ: T&#10;ホールド: T&#10;ダブルタップ: T×2&#10;Shift+: ⇧T&#10;Ctrl+: ⌃T&#10;&amp;kp T"><span class="kt">T</span></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="タップ: Y&#10;ホールド: Y&#10;ダブルタップ: Y×2&#10;Shift+: ⇧Y&#10;Ctrl+: ⌃Y&#10;&amp;kp Y"><span class="kt">Y</span></div>
+<div class="key" style="left:468px;top:0px;width:48px;height:48px" title="タップ: U&#10;ホールド: U&#10;ダブルタップ: U×2&#10;Shift+: ⇧U&#10;Ctrl+: ⌃U&#10;&amp;kp U"><span class="kt">U</span></div>
+<div class="key" style="left:520px;top:0px;width:48px;height:48px" title="タップ: I&#10;ホールド: I&#10;ダブルタップ: I×2&#10;Shift+: ⇧I&#10;Ctrl+: ⌃I&#10;&amp;kp I"><span class="kt">I</span></div>
+<div class="key" style="left:572px;top:0px;width:48px;height:48px" title="タップ: O&#10;ホールド: O&#10;ダブルタップ: O×2&#10;Shift+: ⇧O&#10;Ctrl+: ⌃O&#10;&amp;kp O"><span class="kt">O</span></div>
+<div class="key" style="left:624px;top:0px;width:48px;height:48px" title="タップ: P&#10;ホールド: P&#10;ダブルタップ: P×2&#10;Shift+: ⇧P&#10;Ctrl+: ⌃P&#10;&amp;kp P"><span class="kt">P</span></div>
+<div class="key" style="left:0px;top:52px;width:48px;height:48px" title="タップ: A&#10;ホールド: LCtrl&#10;ダブルタップ: A×2&#10;Shift+: ⇧A&#10;Ctrl+: ⌃A&#10;&amp;mt LEFT_CONTROL A"><span class="kt">A</span><span class="kh">LCtrl</span></div>
+<div class="key" style="left:52px;top:52px;width:48px;height:48px" title="タップ: S&#10;ホールド: S&#10;ダブルタップ: S×2&#10;Shift+: ⇧S&#10;Ctrl+: ⌃S&#10;&amp;kp S"><span class="kt">S</span></div>
+<div class="key" style="left:104px;top:52px;width:48px;height:48px" title="タップ: D&#10;ホールド: D&#10;ダブルタップ: D×2&#10;Shift+: ⇧D&#10;Ctrl+: ⌃D&#10;&amp;kp D"><span class="kt">D</span></div>
+<div class="key" style="left:156px;top:52px;width:48px;height:48px" title="タップ: F&#10;ホールド: F&#10;ダブルタップ: F×2&#10;Shift+: ⇧F&#10;Ctrl+: ⌃F&#10;&amp;kp F"><span class="kt">F</span></div>
+<div class="key" style="left:208px;top:52px;width:48px;height:48px" title="タップ: G&#10;ホールド: G&#10;ダブルタップ: G×2&#10;Shift+: ⇧G&#10;Ctrl+: ⌃G&#10;&amp;kp G"><span class="kt">G</span></div>
+<div class="key" style="left:416px;top:52px;width:48px;height:48px" title="タップ: H&#10;ホールド: H&#10;ダブルタップ: H×2&#10;Shift+: ⇧H&#10;Ctrl+: ⌃H&#10;&amp;kp H"><span class="kt">H</span></div>
+<div class="key" style="left:468px;top:52px;width:48px;height:48px" title="タップ: J&#10;ホールド: J&#10;ダブルタップ: J×2&#10;Shift+: ⇧J&#10;Ctrl+: ⌃J&#10;&amp;kp J"><span class="kt">J</span></div>
+<div class="key" style="left:520px;top:52px;width:48px;height:48px" title="タップ: K&#10;ホールド: K&#10;ダブルタップ: K×2&#10;Shift+: ⇧K&#10;Ctrl+: ⌃K&#10;&amp;kp K"><span class="kt">K</span></div>
+<div class="key" style="left:572px;top:52px;width:48px;height:48px" title="タップ: L&#10;ホールド: L&#10;ダブルタップ: L×2&#10;Shift+: ⇧L&#10;Ctrl+: ⌃L&#10;&amp;kp L"><span class="kt">L</span></div>
+<div class="key" style="left:624px;top:52px;width:48px;height:48px" title="タップ: -&#10;ホールド: RCtrl&#10;ダブルタップ: -×2&#10;Shift+: ⇧-&#10;Ctrl+: ⌃-&#10;&amp;mt RCTRL MINUS"><span class="kt">-</span><span class="kh">RCtrl</span></div>
+<div class="key" style="left:0px;top:104px;width:48px;height:48px" title="タップ: Z&#10;ホールド: LShift&#10;ダブルタップ: Z×2&#10;Shift+: ⇧Z&#10;Ctrl+: ⌃Z&#10;&amp;mt LEFT_SHIFT Z"><span class="kt">Z</span><span class="kh">LShift</span></div>
+<div class="key" style="left:52px;top:104px;width:48px;height:48px" title="タップ: X&#10;ホールド: X&#10;ダブルタップ: X×2&#10;Shift+: ⇧X&#10;Ctrl+: ⌃X&#10;&amp;kp X"><span class="kt">X</span></div>
+<div class="key" style="left:104px;top:104px;width:48px;height:48px" title="タップ: C&#10;ホールド: C&#10;ダブルタップ: C×2&#10;Shift+: ⇧C&#10;Ctrl+: ⌃C&#10;&amp;kp C"><span class="kt">C</span></div>
+<div class="key" style="left:156px;top:104px;width:48px;height:48px" title="タップ: V&#10;ホールド: V&#10;ダブルタップ: V×2&#10;Shift+: ⇧V&#10;Ctrl+: ⌃V&#10;&amp;kp V"><span class="kt">V</span></div>
+<div class="key" style="left:208px;top:104px;width:48px;height:48px" title="タップ: B&#10;ホールド: B&#10;ダブルタップ: B×2&#10;Shift+: ⇧B&#10;Ctrl+: ⌃B&#10;&amp;kp B"><span class="kt">B</span></div>
+<div class="key" style="left:416px;top:104px;width:48px;height:48px" title="タップ: N&#10;ホールド: N&#10;ダブルタップ: N×2&#10;Shift+: ⇧N&#10;Ctrl+: ⌃N&#10;&amp;kp N"><span class="kt">N</span></div>
+<div class="key" style="left:468px;top:104px;width:48px;height:48px" title="タップ: M&#10;ホールド: M&#10;ダブルタップ: M×2&#10;Shift+: ⇧M&#10;Ctrl+: ⌃M&#10;&amp;kp M"><span class="kt">M</span></div>
+<div class="key" style="left:520px;top:104px;width:48px;height:48px" title="タップ: ,&#10;ホールド: ,&#10;ダブルタップ: ,×2&#10;Shift+: ⇧,&#10;Ctrl+: ⌃,&#10;&amp;kp COMMA"><span class="kt">,</span></div>
+<div class="key" style="left:572px;top:104px;width:48px;height:48px" title="タップ: .&#10;ホールド: .&#10;ダブルタップ: .×2&#10;Shift+: ⇧.&#10;Ctrl+: ⌃.&#10;&amp;kp PERIOD"><span class="kt">.</span></div>
+<div class="key" style="left:624px;top:104px;width:48px;height:48px" title="タップ: /&#10;ホールド: RShift&#10;ダブルタップ: /×2&#10;Shift+: ⇧/&#10;Ctrl+: ⌃/&#10;&amp;mt RIGHT_SHIFT SLASH"><span class="kt">/</span><span class="kh">RShift</span></div>
+<div class="key" style="left:0px;top:156px;width:48px;height:48px" title="タップ: L6&#10;ホールド: L6&#10;ダブルタップ: L6&#10;Shift+: L6&#10;Ctrl+: L6&#10;&amp;mo FUNCTION"><span class="kt">L6</span></div>
+<div class="key" style="left:52px;top:156px;width:48px;height:48px" title="タップ: LWin&#10;ホールド: LWin&#10;ダブルタップ: LWin×2&#10;Shift+: ⇧LWin&#10;Ctrl+: ⌃LWin&#10;&amp;kp LEFT_WIN"><span class="kt">LWin</span></div>
+<div class="key" style="left:104px;top:156px;width:48px;height:48px" title="タップ: LAlt&#10;ホールド: LAlt&#10;ダブルタップ: LAlt×2&#10;Shift+: ⇧LAlt&#10;Ctrl+: ⌃LAlt&#10;&amp;kp LEFT_ALT"><span class="kt">LAlt</span></div>
+<div class="key" style="left:156px;top:156px;width:48px;height:48px" title="タップ: SPACE&#10;ホールド: L2&#10;ダブルタップ: SPACE×2&#10;Shift+: ⇧SPACE&#10;Ctrl+: ⌃SPACE&#10;&amp;lt VIM_NORMAL_BASE SPACE"><span class="kt">SPACE</span><span class="kh">L2</span></div>
+<div class="key" style="left:208px;top:156px;width:48px;height:48px" title="タップ: SPACE&#10;ホールド: L2&#10;ダブルタップ: SPACE×2&#10;Shift+: ⇧SPACE&#10;Ctrl+: ⌃SPACE&#10;&amp;lt VIM_NORMAL_BASE SPACE"><span class="kt">SPACE</span><span class="kh">L2</span></div>
+<div class="key" style="left:260px;top:156px;width:48px;height:48px" title="タップ: L1&#10;ホールド: L1&#10;ダブルタップ: L1&#10;Shift+: L1&#10;Ctrl+: L1&#10;&amp;mo NUM_SYMBOL"><span class="kt">L1</span></div>
+<div class="key" style="left:364px;top:156px;width:48px;height:48px" title="タップ: L7&#10;ホールド: L7&#10;ダブルタップ: L7&#10;Shift+: L7&#10;Ctrl+: L7&#10;&amp;mo BLUETOOTH"><span class="kt">L7</span></div>
+<div class="key" style="left:416px;top:156px;width:48px;height:48px" title="タップ: ENTER&#10;ホールド: L1&#10;ダブルタップ: ENTER×2&#10;Shift+: ⇧ENTER&#10;Ctrl+: ⌃ENTER&#10;&amp;lt NUM_SYMBOL ENTER"><span class="kt">ENTER</span><span class="kh">L1</span></div>
+<div class="key" style="left:468px;top:156px;width:48px;height:48px" title="タップ: L7&#10;ホールド: L7&#10;ダブルタップ: L7&#10;Shift+: L7&#10;Ctrl+: L7&#10;&amp;mo BLUETOOTH"><span class="kt">L7</span></div>
+<div class="key" style="left:520px;top:156px;width:48px;height:48px" title="タップ: L2&#10;ホールド: L2&#10;ダブルタップ: L2&#10;Shift+: L2&#10;Ctrl+: L2&#10;&amp;mo VIM_NORMAL_BASE"><span class="kt">L2</span></div>
+<div class="key" style="left:572px;top:156px;width:48px;height:48px" title="タップ: L6&#10;ホールド: L6&#10;ダブルタップ: L6&#10;Shift+: L6&#10;Ctrl+: L6&#10;&amp;mo FUNCTION"><span class="kt">L6</span></div>
+<div class="key" style="left:624px;top:156px;width:48px;height:48px" title="タップ: L6&#10;ホールド: L6&#10;ダブルタップ: L6&#10;Shift+: L6&#10;Ctrl+: L6&#10;&amp;mo FUNCTION"><span class="kt">L6</span></div>
+</div>
+<h3>NUM_SYMBOL レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key" style="left:0px;top:0px;width:48px;height:48px" title="タップ: 1&#10;ホールド: 1&#10;ダブルタップ: 1×2&#10;Shift+: ⇧1&#10;Ctrl+: ⌃1&#10;&amp;kp N1"><span class="kt">1</span></div>
+<div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: 2&#10;ホールド: 2&#10;ダブルタップ: 2×2&#10;Shift+: ⇧2&#10;Ctrl+: ⌃2&#10;&amp;kp N2"><span class="kt">2</span></div>
+<div class="key" style="left:104px;top:0px;width:48px;height:48px" title="タップ: 3&#10;ホールド: 3&#10;ダブルタップ: 3×2&#10;Shift+: ⇧3&#10;Ctrl+: ⌃3&#10;&amp;kp N3"><span class="kt">3</span></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="タップ: 4&#10;ホールド: 4&#10;ダブルタップ: 4×2&#10;Shift+: ⇧4&#10;Ctrl+: ⌃4&#10;&amp;kp N4"><span class="kt">4</span></div>
+<div class="key" style="left:208px;top:0px;width:48px;height:48px" title="タップ: 5&#10;ホールド: 5&#10;ダブルタップ: 5×2&#10;Shift+: ⇧5&#10;Ctrl+: ⌃5&#10;&amp;kp N5"><span class="kt">5</span></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="タップ: 6&#10;ホールド: 6&#10;ダブルタップ: 6×2&#10;Shift+: ⇧6&#10;Ctrl+: ⌃6&#10;&amp;kp N6"><span class="kt">6</span></div>
+<div class="key" style="left:468px;top:0px;width:48px;height:48px" title="タップ: 7&#10;ホールド: 7&#10;ダブルタップ: 7×2&#10;Shift+: ⇧7&#10;Ctrl+: ⌃7&#10;&amp;kp N7"><span class="kt">7</span></div>
+<div class="key" style="left:520px;top:0px;width:48px;height:48px" title="タップ: 8&#10;ホールド: 8&#10;ダブルタップ: 8×2&#10;Shift+: ⇧8&#10;Ctrl+: ⌃8&#10;&amp;kp N8"><span class="kt">8</span></div>
+<div class="key" style="left:572px;top:0px;width:48px;height:48px" title="タップ: 9&#10;ホールド: 9&#10;ダブルタップ: 9×2&#10;Shift+: ⇧9&#10;Ctrl+: ⌃9&#10;&amp;kp N9"><span class="kt">9</span></div>
+<div class="key" style="left:624px;top:0px;width:48px;height:48px" title="タップ: 0&#10;ホールド: 0&#10;ダブルタップ: 0×2&#10;Shift+: ⇧0&#10;Ctrl+: ⌃0&#10;&amp;kp N0"><span class="kt">0</span></div>
+<div class="key" style="left:0px;top:52px;width:48px;height:48px" title="タップ: TAB&#10;ホールド: LCtrl&#10;ダブルタップ: TAB×2&#10;Shift+: ⇧TAB&#10;Ctrl+: ⌃TAB&#10;&amp;mt LCTRL TAB"><span class="kt">TAB</span><span class="kh">LCtrl</span></div>
+<div class="key" style="left:52px;top:52px;width:48px;height:48px" title="タップ: &#96;&#10;ホールド: &#96;&#10;ダブルタップ: &#96;×2&#10;Shift+: ⇧&#96;&#10;Ctrl+: ⌃&#96;&#10;&amp;kp GRAVE"><span class="kt">&#96;</span></div>
+<div class="key" style="left:104px;top:52px;width:48px;height:48px" title="タップ: [&#10;ホールド: [&#10;ダブルタップ: [×2&#10;Shift+: ⇧[&#10;Ctrl+: ⌃[&#10;&amp;kp LEFT_BRACKET"><span class="kt">[</span></div>
+<div class="key" style="left:156px;top:52px;width:48px;height:48px" title="タップ: ]&#10;ホールド: ]&#10;ダブルタップ: ]×2&#10;Shift+: ⇧]&#10;Ctrl+: ⌃]&#10;&amp;kp RIGHT_BRACKET"><span class="kt">]</span></div>
+<div class="key" style="left:208px;top:52px;width:48px;height:48px" title="タップ: DEL&#10;ホールド: DEL&#10;ダブルタップ: DEL×2&#10;Shift+: ⇧DEL&#10;Ctrl+: ⌃DEL&#10;&amp;kp DELETE"><span class="kt">DEL</span></div>
+<div class="key" style="left:416px;top:52px;width:48px;height:48px" title="タップ: BS&#10;ホールド: BS&#10;ダブルタップ: BS×2&#10;Shift+: ⇧BS&#10;Ctrl+: ⌃BS&#10;&amp;kp BACKSPACE"><span class="kt">BS</span></div>
+<div class="key" style="left:468px;top:52px;width:48px;height:48px" title="タップ: ;&#10;ホールド: ;&#10;ダブルタップ: ;×2&#10;Shift+: ⇧;&#10;Ctrl+: ⌃;&#10;&amp;kp SEMICOLON"><span class="kt">;</span></div>
+<div class="key" style="left:520px;top:52px;width:48px;height:48px" title="タップ: '&#10;ホールド: '&#10;ダブルタップ: '×2&#10;Shift+: ⇧'&#10;Ctrl+: ⌃'&#10;&amp;kp SINGLE_QUOTE"><span class="kt">'</span></div>
+<div class="key" style="left:572px;top:52px;width:48px;height:48px" title="タップ: &#92;&#10;ホールド: &#92;&#10;ダブルタップ: &#92;×2&#10;Shift+: ⇧&#92;&#10;Ctrl+: ⌃&#92;&#10;&amp;kp BACKSLASH"><span class="kt">&#92;</span></div>
+<div class="key trans" style="left:624px;top:52px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key" style="left:0px;top:104px;width:48px;height:48px" title="タップ: ESC&#10;ホールド: LShift&#10;ダブルタップ: ESC×2&#10;Shift+: ⇧ESC&#10;Ctrl+: ⌃ESC&#10;&amp;mt LEFT_SHIFT ESCAPE"><span class="kt">ESC</span><span class="kh">LShift</span></div>
+<div class="key none" style="left:52px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:468px;top:104px;width:48px;height:48px" title="タップ: =&#10;ホールド: =&#10;ダブルタップ: =×2&#10;Shift+: ⇧=&#10;Ctrl+: ⌃=&#10;&amp;kp EQUAL"><span class="kt">=</span></div>
+<div class="key trans" style="left:520px;top:104px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key trans" style="left:572px;top:104px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key trans" style="left:624px;top:104px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key none" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key trans" style="left:52px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key trans" style="left:104px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key" style="left:156px;top:156px;width:48px;height:48px" title="タップ: SPACE&#10;ホールド: L3&#10;ダブルタップ: SPACE×2&#10;Shift+: ⇧SPACE&#10;Ctrl+: ⌃SPACE&#10;&amp;lt VIM_NORMAL_SYM SPACE"><span class="kt">SPACE</span><span class="kh">L3</span></div>
+<div class="key" style="left:208px;top:156px;width:48px;height:48px" title="タップ: SPACE&#10;ホールド: L3&#10;ダブルタップ: SPACE×2&#10;Shift+: ⇧SPACE&#10;Ctrl+: ⌃SPACE&#10;&amp;lt VIM_NORMAL_SYM SPACE"><span class="kt">SPACE</span><span class="kh">L3</span></div>
+<div class="key none" style="left:260px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:520px;top:156px;width:48px;height:48px" title="タップ: L3&#10;ホールド: L3&#10;ダブルタップ: L3&#10;Shift+: L3&#10;Ctrl+: L3&#10;&amp;mo VIM_NORMAL_SYM"><span class="kt">L3</span></div>
+<div class="key trans" style="left:572px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+</div>
+<h3>VIM_NORMAL_BASE レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃BS&#10;&amp;mm_vim_w"><span class="kt">⌃→</span></div>
+<div class="key" style="left:104px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃⌃→&#10;&amp;kp LC(RIGHT)"><span class="kt">⌃→</span></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="Ctrl+: ⌃Y&#10;&amp;mm_vim_ctrl_r"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="ダブルタップ: HOME ▸ ⇧END ▸ ⌃C&#10;Shift+: ⇧END ▸ ⌃C&#10;&amp;mm_vim_y"><span class="kt"></span></div>
+<div class="key" style="left:468px;top:0px;width:48px;height:48px" title="タップ: ⌃Z&#10;ホールド: ⌃Z&#10;ダブルタップ: ⌃Z×2&#10;Shift+: ⇧⌃Z&#10;Ctrl+: PgUp&#10;&amp;mm_vim_u"><span class="kt">⌃Z</span></div>
+<div class="key none" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:572px;top:0px;width:48px;height:48px" title="タップ: END ▸ ENTER&#10;ホールド: END ▸ ENTER&#10;ダブルタップ: END ▸ ENTER×2&#10;Shift+: HOME ▸ ENTER ▸ ↑&#10;Ctrl+: ⌃END ▸ ENTER&#10;&amp;mm_vim_o"><span class="kt">END ▸ ENTER</span></div>
+<div class="key" style="left:624px;top:0px;width:48px;height:48px" title="タップ: ⌃V&#10;ホールド: ⌃V&#10;ダブルタップ: ⌃V×2&#10;Shift+: ⇧⌃V&#10;Ctrl+: ⌃⌃V&#10;&amp;kp LC(V)"><span class="kt">⌃V</span></div>
+<div class="key" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"><span class="kt">LCtrl</span></div>
+<div class="key none" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:104px;top:52px;width:48px;height:48px" title="ダブルタップ: HOME ▸ ⇧END ▸ ⌃X&#10;Shift+: ⇧END ▸ ⌃X&#10;Ctrl+: PgDn&#10;&amp;mm_vim_d"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:208px;top:52px;width:48px;height:48px" title="ダブルタップ: ⌃HOME&#10;Shift+: ⌃END&#10;&amp;mm_vim_g"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ←&#10;ホールド: ←&#10;ダブルタップ: ←×2&#10;Shift+: ⇧←&#10;Ctrl+: ⌃←&#10;&amp;kp LEFT"><span class="kt">←</span></div>
+<div class="key" style="left:468px;top:52px;width:48px;height:48px" title="タップ: ↓&#10;ホールド: ↓&#10;ダブルタップ: ↓×2&#10;Shift+: END ▸ DEL ▸ SPACE&#10;Ctrl+: ⌃↓&#10;&amp;mm_vim_j"><span class="kt">↓</span></div>
+<div class="key" style="left:520px;top:52px;width:48px;height:48px" title="タップ: ↑&#10;ホールド: ↑&#10;ダブルタップ: ↑×2&#10;Shift+: ⇧↑&#10;Ctrl+: ⌃↑&#10;&amp;kp UP_ARROW"><span class="kt">↑</span></div>
+<div class="key" style="left:572px;top:52px;width:48px;height:48px" title="タップ: →&#10;ホールド: →&#10;ダブルタップ: →×2&#10;Shift+: ⇧→&#10;Ctrl+: ⌃→&#10;&amp;kp RIGHT"><span class="kt">→</span></div>
+<div class="key" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"><span class="kt">RCtrl</span></div>
+<div class="key" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"><span class="kt">LShift</span></div>
+<div class="key" style="left:52px;top:104px;width:48px;height:48px" title="タップ: DEL&#10;ホールド: DEL&#10;ダブルタップ: DEL×2&#10;Shift+: ⇧DEL&#10;Ctrl+: ⌃DEL&#10;&amp;kp DELETE"><span class="kt">DEL</span></div>
+<div class="key none" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:156px;top:104px;width:48px;height:48px" title="タップ: ⇒VIM_VISUAL_BASE&#10;ホールド: ⇒VIM_VISUAL_BASE&#10;ダブルタップ: ⇒VIM_VISUAL_BASE&#10;Shift+: HOME ▸ ⇧↓ ▸ ⇒VIM_VISUAL_BASE&#10;Ctrl+: ⇒VIM_VISUAL_BASE&#10;&amp;mm_vim_v"><span class="kt">⇒VIM_VISUAL_BASE</span></div>
+<div class="key" style="left:208px;top:104px;width:48px;height:48px" title="タップ: ⌃←&#10;ホールド: ⌃←&#10;ダブルタップ: ⌃←×2&#10;Shift+: ⇧⌃←&#10;Ctrl+: ⌃⌃←&#10;&amp;kp LC(LEFT)"><span class="kt">⌃←</span></div>
+<div class="key" style="left:416px;top:104px;width:48px;height:48px" title="タップ: F3&#10;ホールド: F3&#10;ダブルタップ: F3×2&#10;Shift+: ⇧F3&#10;Ctrl+: ⌃F3&#10;&amp;mm_vim_n"><span class="kt">F3</span></div>
+<div class="key none" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"><span class="kt">RShift</span></div>
+<div class="key none" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key trans" style="left:52px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key trans" style="left:104px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key none" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:260px;top:156px;width:48px;height:48px" title="タップ: L3&#10;ホールド: L3&#10;ダブルタップ: L3&#10;Shift+: L3&#10;Ctrl+: L3&#10;&amp;mo VIM_NORMAL_SYM"><span class="kt">L3</span></div>
+<div class="key none" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:156px;width:48px;height:48px" title="タップ: ENTER&#10;ホールド: L3&#10;ダブルタップ: ENTER×2&#10;Shift+: ⇧ENTER&#10;Ctrl+: ⌃ENTER&#10;&amp;lt VIM_NORMAL_SYM ENTER"><span class="kt">ENTER</span><span class="kh">L3</span></div>
+<div class="key none" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key trans" style="left:572px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+</div>
+<h3>VIM_NORMAL_BASE レイヤー（Tap Dance: ダブルタップ）</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃BS&#10;&amp;mm_vim_w"></div>
+<div class="key dim" style="left:104px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃⌃→&#10;&amp;kp LC(RIGHT)"></div>
+<div class="key dim" style="left:156px;top:0px;width:48px;height:48px" title="Ctrl+: ⌃Y&#10;&amp;mm_vim_ctrl_r"></div>
+<div class="key dim" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="ダブルタップ: HOME ▸ ⇧END ▸ ⌃C&#10;Shift+: ⇧END ▸ ⌃C&#10;&amp;mm_vim_y"><span class="kt">HOME ▸ ⇧END ▸ ⌃C</span></div>
+<div class="key dim" style="left:468px;top:0px;width:48px;height:48px" title="タップ: ⌃Z&#10;ホールド: ⌃Z&#10;ダブルタップ: ⌃Z×2&#10;Shift+: ⇧⌃Z&#10;Ctrl+: PgUp&#10;&amp;mm_vim_u"></div>
+<div class="key dim" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:0px;width:48px;height:48px" title="タップ: END ▸ ENTER&#10;ホールド: END ▸ ENTER&#10;ダブルタップ: END ▸ ENTER×2&#10;Shift+: HOME ▸ ENTER ▸ ↑&#10;Ctrl+: ⌃END ▸ ENTER&#10;&amp;mm_vim_o"></div>
+<div class="key dim" style="left:624px;top:0px;width:48px;height:48px" title="タップ: ⌃V&#10;ホールド: ⌃V&#10;ダブルタップ: ⌃V×2&#10;Shift+: ⇧⌃V&#10;Ctrl+: ⌃⌃V&#10;&amp;kp LC(V)"></div>
+<div class="key dim" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"></div>
+<div class="key dim" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:104px;top:52px;width:48px;height:48px" title="ダブルタップ: HOME ▸ ⇧END ▸ ⌃X&#10;Shift+: ⇧END ▸ ⌃X&#10;Ctrl+: PgDn&#10;&amp;mm_vim_d"><span class="kt">HOME ▸ ⇧END ▸ ⌃X</span></div>
+<div class="key dim" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:208px;top:52px;width:48px;height:48px" title="ダブルタップ: ⌃HOME&#10;Shift+: ⌃END&#10;&amp;mm_vim_g"><span class="kt">⌃HOME</span></div>
+<div class="key dim" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ←&#10;ホールド: ←&#10;ダブルタップ: ←×2&#10;Shift+: ⇧←&#10;Ctrl+: ⌃←&#10;&amp;kp LEFT"></div>
+<div class="key dim" style="left:468px;top:52px;width:48px;height:48px" title="タップ: ↓&#10;ホールド: ↓&#10;ダブルタップ: ↓×2&#10;Shift+: END ▸ DEL ▸ SPACE&#10;Ctrl+: ⌃↓&#10;&amp;mm_vim_j"></div>
+<div class="key dim" style="left:520px;top:52px;width:48px;height:48px" title="タップ: ↑&#10;ホールド: ↑&#10;ダブルタップ: ↑×2&#10;Shift+: ⇧↑&#10;Ctrl+: ⌃↑&#10;&amp;kp UP_ARROW"></div>
+<div class="key dim" style="left:572px;top:52px;width:48px;height:48px" title="タップ: →&#10;ホールド: →&#10;ダブルタップ: →×2&#10;Shift+: ⇧→&#10;Ctrl+: ⌃→&#10;&amp;kp RIGHT"></div>
+<div class="key dim" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"></div>
+<div class="key dim" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"></div>
+<div class="key dim" style="left:52px;top:104px;width:48px;height:48px" title="タップ: DEL&#10;ホールド: DEL&#10;ダブルタップ: DEL×2&#10;Shift+: ⇧DEL&#10;Ctrl+: ⌃DEL&#10;&amp;kp DELETE"></div>
+<div class="key dim" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:104px;width:48px;height:48px" title="タップ: ⇒VIM_VISUAL_BASE&#10;ホールド: ⇒VIM_VISUAL_BASE&#10;ダブルタップ: ⇒VIM_VISUAL_BASE&#10;Shift+: HOME ▸ ⇧↓ ▸ ⇒VIM_VISUAL_BASE&#10;Ctrl+: ⇒VIM_VISUAL_BASE&#10;&amp;mm_vim_v"></div>
+<div class="key dim" style="left:208px;top:104px;width:48px;height:48px" title="タップ: ⌃←&#10;ホールド: ⌃←&#10;ダブルタップ: ⌃←×2&#10;Shift+: ⇧⌃←&#10;Ctrl+: ⌃⌃←&#10;&amp;kp LC(LEFT)"></div>
+<div class="key dim" style="left:416px;top:104px;width:48px;height:48px" title="タップ: F3&#10;ホールド: F3&#10;ダブルタップ: F3×2&#10;Shift+: ⇧F3&#10;Ctrl+: ⌃F3&#10;&amp;mm_vim_n"></div>
+<div class="key dim" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"></div>
+<div class="key dim" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:104px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:260px;top:156px;width:48px;height:48px" title="タップ: L3&#10;ホールド: L3&#10;ダブルタップ: L3&#10;Shift+: L3&#10;Ctrl+: L3&#10;&amp;mo VIM_NORMAL_SYM"></div>
+<div class="key dim" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:156px;width:48px;height:48px" title="タップ: ENTER&#10;ホールド: L3&#10;ダブルタップ: ENTER×2&#10;Shift+: ⇧ENTER&#10;Ctrl+: ⌃ENTER&#10;&amp;lt VIM_NORMAL_SYM ENTER"></div>
+<div class="key dim" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+</div>
+<h3>VIM_NORMAL_BASE レイヤー（Mod Morph: Shift+）</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃BS&#10;&amp;mm_vim_w"></div>
+<div class="key dim" style="left:104px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃⌃→&#10;&amp;kp LC(RIGHT)"></div>
+<div class="key dim" style="left:156px;top:0px;width:48px;height:48px" title="Ctrl+: ⌃Y&#10;&amp;mm_vim_ctrl_r"></div>
+<div class="key dim" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="ダブルタップ: HOME ▸ ⇧END ▸ ⌃C&#10;Shift+: ⇧END ▸ ⌃C&#10;&amp;mm_vim_y"><span class="kt">⇧END ▸ ⌃C</span></div>
+<div class="key dim" style="left:468px;top:0px;width:48px;height:48px" title="タップ: ⌃Z&#10;ホールド: ⌃Z&#10;ダブルタップ: ⌃Z×2&#10;Shift+: ⇧⌃Z&#10;Ctrl+: PgUp&#10;&amp;mm_vim_u"></div>
+<div class="key dim" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:572px;top:0px;width:48px;height:48px" title="タップ: END ▸ ENTER&#10;ホールド: END ▸ ENTER&#10;ダブルタップ: END ▸ ENTER×2&#10;Shift+: HOME ▸ ENTER ▸ ↑&#10;Ctrl+: ⌃END ▸ ENTER&#10;&amp;mm_vim_o"><span class="kt">HOME ▸ ENTER ▸ ↑</span></div>
+<div class="key dim" style="left:624px;top:0px;width:48px;height:48px" title="タップ: ⌃V&#10;ホールド: ⌃V&#10;ダブルタップ: ⌃V×2&#10;Shift+: ⇧⌃V&#10;Ctrl+: ⌃⌃V&#10;&amp;kp LC(V)"></div>
+<div class="key dim" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"></div>
+<div class="key dim" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:104px;top:52px;width:48px;height:48px" title="ダブルタップ: HOME ▸ ⇧END ▸ ⌃X&#10;Shift+: ⇧END ▸ ⌃X&#10;Ctrl+: PgDn&#10;&amp;mm_vim_d"><span class="kt">⇧END ▸ ⌃X</span></div>
+<div class="key dim" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:208px;top:52px;width:48px;height:48px" title="ダブルタップ: ⌃HOME&#10;Shift+: ⌃END&#10;&amp;mm_vim_g"><span class="kt">⌃END</span></div>
+<div class="key dim" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ←&#10;ホールド: ←&#10;ダブルタップ: ←×2&#10;Shift+: ⇧←&#10;Ctrl+: ⌃←&#10;&amp;kp LEFT"></div>
+<div class="key" style="left:468px;top:52px;width:48px;height:48px" title="タップ: ↓&#10;ホールド: ↓&#10;ダブルタップ: ↓×2&#10;Shift+: END ▸ DEL ▸ SPACE&#10;Ctrl+: ⌃↓&#10;&amp;mm_vim_j"><span class="kt">END ▸ DEL ▸ SPACE</span></div>
+<div class="key dim" style="left:520px;top:52px;width:48px;height:48px" title="タップ: ↑&#10;ホールド: ↑&#10;ダブルタップ: ↑×2&#10;Shift+: ⇧↑&#10;Ctrl+: ⌃↑&#10;&amp;kp UP_ARROW"></div>
+<div class="key dim" style="left:572px;top:52px;width:48px;height:48px" title="タップ: →&#10;ホールド: →&#10;ダブルタップ: →×2&#10;Shift+: ⇧→&#10;Ctrl+: ⌃→&#10;&amp;kp RIGHT"></div>
+<div class="key dim" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"></div>
+<div class="key dim" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"></div>
+<div class="key dim" style="left:52px;top:104px;width:48px;height:48px" title="タップ: DEL&#10;ホールド: DEL&#10;ダブルタップ: DEL×2&#10;Shift+: ⇧DEL&#10;Ctrl+: ⌃DEL&#10;&amp;kp DELETE"></div>
+<div class="key dim" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:156px;top:104px;width:48px;height:48px" title="タップ: ⇒VIM_VISUAL_BASE&#10;ホールド: ⇒VIM_VISUAL_BASE&#10;ダブルタップ: ⇒VIM_VISUAL_BASE&#10;Shift+: HOME ▸ ⇧↓ ▸ ⇒VIM_VISUAL_BASE&#10;Ctrl+: ⇒VIM_VISUAL_BASE&#10;&amp;mm_vim_v"><span class="kt">HOME ▸ ⇧↓ ▸ ⇒VIM_VISUAL_BASE</span></div>
+<div class="key dim" style="left:208px;top:104px;width:48px;height:48px" title="タップ: ⌃←&#10;ホールド: ⌃←&#10;ダブルタップ: ⌃←×2&#10;Shift+: ⇧⌃←&#10;Ctrl+: ⌃⌃←&#10;&amp;kp LC(LEFT)"></div>
+<div class="key dim" style="left:416px;top:104px;width:48px;height:48px" title="タップ: F3&#10;ホールド: F3&#10;ダブルタップ: F3×2&#10;Shift+: ⇧F3&#10;Ctrl+: ⌃F3&#10;&amp;mm_vim_n"></div>
+<div class="key dim" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"></div>
+<div class="key dim" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:104px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:260px;top:156px;width:48px;height:48px" title="タップ: L3&#10;ホールド: L3&#10;ダブルタップ: L3&#10;Shift+: L3&#10;Ctrl+: L3&#10;&amp;mo VIM_NORMAL_SYM"></div>
+<div class="key dim" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:156px;width:48px;height:48px" title="タップ: ENTER&#10;ホールド: L3&#10;ダブルタップ: ENTER×2&#10;Shift+: ⇧ENTER&#10;Ctrl+: ⌃ENTER&#10;&amp;lt VIM_NORMAL_SYM ENTER"></div>
+<div class="key dim" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+</div>
+<h3>VIM_NORMAL_BASE レイヤー（Mod Morph: Ctrl+）</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃BS&#10;&amp;mm_vim_w"><span class="kt">⌃BS</span></div>
+<div class="key dim" style="left:104px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃⌃→&#10;&amp;kp LC(RIGHT)"></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="Ctrl+: ⌃Y&#10;&amp;mm_vim_ctrl_r"><span class="kt">⌃Y</span></div>
+<div class="key dim" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:0px;width:48px;height:48px" title="ダブルタップ: HOME ▸ ⇧END ▸ ⌃C&#10;Shift+: ⇧END ▸ ⌃C&#10;&amp;mm_vim_y"></div>
+<div class="key" style="left:468px;top:0px;width:48px;height:48px" title="タップ: ⌃Z&#10;ホールド: ⌃Z&#10;ダブルタップ: ⌃Z×2&#10;Shift+: ⇧⌃Z&#10;Ctrl+: PgUp&#10;&amp;mm_vim_u"><span class="kt">PgUp</span></div>
+<div class="key dim" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:0px;width:48px;height:48px" title="タップ: END ▸ ENTER&#10;ホールド: END ▸ ENTER&#10;ダブルタップ: END ▸ ENTER×2&#10;Shift+: HOME ▸ ENTER ▸ ↑&#10;Ctrl+: ⌃END ▸ ENTER&#10;&amp;mm_vim_o"></div>
+<div class="key dim" style="left:624px;top:0px;width:48px;height:48px" title="タップ: ⌃V&#10;ホールド: ⌃V&#10;ダブルタップ: ⌃V×2&#10;Shift+: ⇧⌃V&#10;Ctrl+: ⌃⌃V&#10;&amp;kp LC(V)"></div>
+<div class="key dim" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"></div>
+<div class="key dim" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:104px;top:52px;width:48px;height:48px" title="ダブルタップ: HOME ▸ ⇧END ▸ ⌃X&#10;Shift+: ⇧END ▸ ⌃X&#10;Ctrl+: PgDn&#10;&amp;mm_vim_d"><span class="kt">PgDn</span></div>
+<div class="key dim" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:52px;width:48px;height:48px" title="ダブルタップ: ⌃HOME&#10;Shift+: ⌃END&#10;&amp;mm_vim_g"></div>
+<div class="key dim" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ←&#10;ホールド: ←&#10;ダブルタップ: ←×2&#10;Shift+: ⇧←&#10;Ctrl+: ⌃←&#10;&amp;kp LEFT"></div>
+<div class="key dim" style="left:468px;top:52px;width:48px;height:48px" title="タップ: ↓&#10;ホールド: ↓&#10;ダブルタップ: ↓×2&#10;Shift+: END ▸ DEL ▸ SPACE&#10;Ctrl+: ⌃↓&#10;&amp;mm_vim_j"></div>
+<div class="key dim" style="left:520px;top:52px;width:48px;height:48px" title="タップ: ↑&#10;ホールド: ↑&#10;ダブルタップ: ↑×2&#10;Shift+: ⇧↑&#10;Ctrl+: ⌃↑&#10;&amp;kp UP_ARROW"></div>
+<div class="key dim" style="left:572px;top:52px;width:48px;height:48px" title="タップ: →&#10;ホールド: →&#10;ダブルタップ: →×2&#10;Shift+: ⇧→&#10;Ctrl+: ⌃→&#10;&amp;kp RIGHT"></div>
+<div class="key dim" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"></div>
+<div class="key dim" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"></div>
+<div class="key dim" style="left:52px;top:104px;width:48px;height:48px" title="タップ: DEL&#10;ホールド: DEL&#10;ダブルタップ: DEL×2&#10;Shift+: ⇧DEL&#10;Ctrl+: ⌃DEL&#10;&amp;kp DELETE"></div>
+<div class="key dim" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:104px;width:48px;height:48px" title="タップ: ⇒VIM_VISUAL_BASE&#10;ホールド: ⇒VIM_VISUAL_BASE&#10;ダブルタップ: ⇒VIM_VISUAL_BASE&#10;Shift+: HOME ▸ ⇧↓ ▸ ⇒VIM_VISUAL_BASE&#10;Ctrl+: ⇒VIM_VISUAL_BASE&#10;&amp;mm_vim_v"></div>
+<div class="key dim" style="left:208px;top:104px;width:48px;height:48px" title="タップ: ⌃←&#10;ホールド: ⌃←&#10;ダブルタップ: ⌃←×2&#10;Shift+: ⇧⌃←&#10;Ctrl+: ⌃⌃←&#10;&amp;kp LC(LEFT)"></div>
+<div class="key dim" style="left:416px;top:104px;width:48px;height:48px" title="タップ: F3&#10;ホールド: F3&#10;ダブルタップ: F3×2&#10;Shift+: ⇧F3&#10;Ctrl+: ⌃F3&#10;&amp;mm_vim_n"></div>
+<div class="key dim" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"></div>
+<div class="key dim" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:104px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:260px;top:156px;width:48px;height:48px" title="タップ: L3&#10;ホールド: L3&#10;ダブルタップ: L3&#10;Shift+: L3&#10;Ctrl+: L3&#10;&amp;mo VIM_NORMAL_SYM"></div>
+<div class="key dim" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:156px;width:48px;height:48px" title="タップ: ENTER&#10;ホールド: L3&#10;ダブルタップ: ENTER×2&#10;Shift+: ⇧ENTER&#10;Ctrl+: ⌃ENTER&#10;&amp;lt VIM_NORMAL_SYM ENTER"></div>
+<div class="key dim" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+</div>
+<h3>VIM_NORMAL_SYM レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="Shift+: END&#10;&amp;mm_vim_shift_4"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="Shift+: HOME&#10;&amp;mm_vim_shift_6"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:624px;top:0px;width:48px;height:48px" title="タップ: HOME&#10;ホールド: HOME&#10;ダブルタップ: HOME×2&#10;Shift+: ⇧HOME&#10;Ctrl+: ⌃HOME&#10;&amp;kp HOME"><span class="kt">HOME</span></div>
+<div class="key" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"><span class="kt">LCtrl</span></div>
+<div class="key none" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ←&#10;ホールド: ←&#10;ダブルタップ: ←×2&#10;Shift+: ⇧←&#10;Ctrl+: ⌃←&#10;&amp;kp LEFT"><span class="kt">←</span></div>
+<div class="key none" style="left:468px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"><span class="kt">RCtrl</span></div>
+<div class="key" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"><span class="kt">LShift</span></div>
+<div class="key none" style="left:52px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"><span class="kt">RShift</span></div>
+<div class="key none" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key trans" style="left:52px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key trans" style="left:104px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key none" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:260px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key trans" style="left:572px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"><span class="kt">▽</span></div>
+<div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+</div>
+<h3>VIM_NORMAL_SYM レイヤー（Mod Morph: Shift+）</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="Shift+: END&#10;&amp;mm_vim_shift_4"><span class="kt">END</span></div>
+<div class="key dim" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="Shift+: HOME&#10;&amp;mm_vim_shift_6"><span class="kt">HOME</span></div>
+<div class="key dim" style="left:468px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:0px;width:48px;height:48px" title="タップ: HOME&#10;ホールド: HOME&#10;ダブルタップ: HOME×2&#10;Shift+: ⇧HOME&#10;Ctrl+: ⌃HOME&#10;&amp;kp HOME"></div>
+<div class="key dim" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"></div>
+<div class="key dim" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ←&#10;ホールド: ←&#10;ダブルタップ: ←×2&#10;Shift+: ⇧←&#10;Ctrl+: ⌃←&#10;&amp;kp LEFT"></div>
+<div class="key dim" style="left:468px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"></div>
+<div class="key dim" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"></div>
+<div class="key dim" style="left:52px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"></div>
+<div class="key dim" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:104px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:260px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="タップ: ▽&#10;ホールド: ▽&#10;ダブルタップ: ▽&#10;Shift+: ▽&#10;Ctrl+: ▽&#10;&amp;trans"></div>
+<div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+</div>
+<h3>MOUSE_MOVE レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:520px;top:52px;width:48px;height:48px" title="タップ: L5&#10;ホールド: L5&#10;ダブルタップ: L5&#10;Shift+: L5&#10;Ctrl+: L5&#10;&amp;mo MOUSE_SCROLL"><span class="kt">L5</span></div>
+<div class="key none" style="left:572px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:260px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+</div>
+<h3>MOUSE_SCROLL レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:468px;top:52px;width:48px;height:48px" title="タップ: 🖱左&#10;ホールド: 🖱左&#10;ダブルタップ: 🖱左&#10;Shift+: 🖱左&#10;Ctrl+: 🖱左&#10;&amp;mkp MB1"><span class="kt">🖱左</span></div>
+<div class="key none" style="left:520px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:572px;top:52px;width:48px;height:48px" title="タップ: 🖱右&#10;ホールド: 🖱右&#10;ダブルタップ: 🖱右&#10;Shift+: 🖱右&#10;Ctrl+: 🖱右&#10;&amp;mkp MB2"><span class="kt">🖱右</span></div>
+<div class="key none" style="left:624px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:468px;top:104px;width:48px;height:48px" title="タップ: 🖱戻&#10;ホールド: 🖱戻&#10;ダブルタップ: 🖱戻&#10;Shift+: 🖱戻&#10;Ctrl+: 🖱戻&#10;&amp;mkp MB4"><span class="kt">🖱戻</span></div>
+<div class="key none" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:572px;top:104px;width:48px;height:48px" title="タップ: 🖱進&#10;ホールド: 🖱進&#10;ダブルタップ: 🖱進&#10;Shift+: 🖱進&#10;Ctrl+: 🖱進&#10;&amp;mkp MB5"><span class="kt">🖱進</span></div>
+<div class="key none" style="left:624px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:260px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+</div>
+<h3>FUNCTION レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key" style="left:0px;top:0px;width:48px;height:48px" title="タップ: F1&#10;ホールド: F1&#10;ダブルタップ: F1×2&#10;Shift+: ⇧F1&#10;Ctrl+: ⌃F1&#10;&amp;kp F1"><span class="kt">F1</span></div>
+<div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: F2&#10;ホールド: F2&#10;ダブルタップ: F2×2&#10;Shift+: ⇧F2&#10;Ctrl+: ⌃F2&#10;&amp;kp F2"><span class="kt">F2</span></div>
+<div class="key" style="left:104px;top:0px;width:48px;height:48px" title="タップ: F3&#10;ホールド: F3&#10;ダブルタップ: F3×2&#10;Shift+: ⇧F3&#10;Ctrl+: ⌃F3&#10;&amp;kp F3"><span class="kt">F3</span></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="タップ: F4&#10;ホールド: F4&#10;ダブルタップ: F4×2&#10;Shift+: ⇧F4&#10;Ctrl+: ⌃F4&#10;&amp;kp F4"><span class="kt">F4</span></div>
+<div class="key" style="left:208px;top:0px;width:48px;height:48px" title="タップ: F5&#10;ホールド: F5&#10;ダブルタップ: F5×2&#10;Shift+: ⇧F5&#10;Ctrl+: ⌃F5&#10;&amp;kp F5"><span class="kt">F5</span></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="タップ: F6&#10;ホールド: F6&#10;ダブルタップ: F6×2&#10;Shift+: ⇧F6&#10;Ctrl+: ⌃F6&#10;&amp;kp F6"><span class="kt">F6</span></div>
+<div class="key" style="left:468px;top:0px;width:48px;height:48px" title="タップ: F7&#10;ホールド: F7&#10;ダブルタップ: F7×2&#10;Shift+: ⇧F7&#10;Ctrl+: ⌃F7&#10;&amp;kp F7"><span class="kt">F7</span></div>
+<div class="key" style="left:520px;top:0px;width:48px;height:48px" title="タップ: F8&#10;ホールド: F8&#10;ダブルタップ: F8×2&#10;Shift+: ⇧F8&#10;Ctrl+: ⌃F8&#10;&amp;kp F8"><span class="kt">F8</span></div>
+<div class="key" style="left:572px;top:0px;width:48px;height:48px" title="タップ: F9&#10;ホールド: F9&#10;ダブルタップ: F9×2&#10;Shift+: ⇧F9&#10;Ctrl+: ⌃F9&#10;&amp;kp F9"><span class="kt">F9</span></div>
+<div class="key" style="left:624px;top:0px;width:48px;height:48px" title="タップ: F10&#10;ホールド: F10&#10;ダブルタップ: F10×2&#10;Shift+: ⇧F10&#10;Ctrl+: ⌃F10&#10;&amp;kp F10"><span class="kt">F10</span></div>
+<div class="key none" style="left:0px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:52px;top:52px;width:48px;height:48px" title="タップ: リセット&#10;ホールド: リセット&#10;ダブルタップ: リセット&#10;Shift+: リセット&#10;Ctrl+: リセット&#10;&amp;sys_reset"><span class="kt">リセット</span></div>
+<div class="key none" style="left:104px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:572px;top:52px;width:48px;height:48px" title="タップ: リセット&#10;ホールド: リセット&#10;ダブルタップ: リセット&#10;Shift+: リセット&#10;Ctrl+: リセット&#10;&amp;sys_reset"><span class="kt">リセット</span></div>
+<div class="key none" style="left:624px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:208px;top:104px;width:48px;height:48px" title="タップ: ブートローダ&#10;ホールド: ブートローダ&#10;ダブルタップ: ブートローダ&#10;Shift+: ブートローダ&#10;Ctrl+: ブートローダ&#10;&amp;bootloader"><span class="kt">ブートローダ</span></div>
+<div class="key" style="left:416px;top:104px;width:48px;height:48px" title="タップ: ブートローダ&#10;ホールド: ブートローダ&#10;ダブルタップ: ブートローダ&#10;Shift+: ブートローダ&#10;Ctrl+: ブートローダ&#10;&amp;bootloader"><span class="kt">ブートローダ</span></div>
+<div class="key none" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:260px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+</div>
+<h3>BLUETOOTH レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key" style="left:0px;top:0px;width:48px;height:48px" title="タップ: BT0&#10;ホールド: BT0&#10;ダブルタップ: BT0&#10;Shift+: BT0&#10;Ctrl+: BT0&#10;&amp;bt BT_SEL 0"><span class="kt">BT0</span></div>
+<div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: BT1&#10;ホールド: BT1&#10;ダブルタップ: BT1&#10;Shift+: BT1&#10;Ctrl+: BT1&#10;&amp;bt BT_SEL 1"><span class="kt">BT1</span></div>
+<div class="key" style="left:104px;top:0px;width:48px;height:48px" title="タップ: BT2&#10;ホールド: BT2&#10;ダブルタップ: BT2&#10;Shift+: BT2&#10;Ctrl+: BT2&#10;&amp;bt BT_SEL 2"><span class="kt">BT2</span></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="タップ: BT3&#10;ホールド: BT3&#10;ダブルタップ: BT3&#10;Shift+: BT3&#10;Ctrl+: BT3&#10;&amp;bt BT_SEL 3"><span class="kt">BT3</span></div>
+<div class="key" style="left:208px;top:0px;width:48px;height:48px" title="タップ: BT4&#10;ホールド: BT4&#10;ダブルタップ: BT4&#10;Shift+: BT4&#10;Ctrl+: BT4&#10;&amp;bt BT_SEL 4"><span class="kt">BT4</span></div>
+<div class="key none" style="left:416px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:468px;top:0px;width:48px;height:48px" title="タップ: USB出力&#10;ホールド: USB出力&#10;ダブルタップ: USB出力&#10;Shift+: USB出力&#10;Ctrl+: USB出力&#10;&amp;out OUT_USB"><span class="kt">USB出力</span></div>
+<div class="key none" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:0px;top:52px;width:48px;height:48px" title="タップ: BT全解除&#10;ホールド: BT全解除&#10;ダブルタップ: BT全解除&#10;Shift+: BT全解除&#10;Ctrl+: BT全解除&#10;&amp;bt BT_CLR_ALL"><span class="kt">BT全解除</span></div>
+<div class="key none" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:104px;top:104px;width:48px;height:48px" title="タップ: BT解除&#10;ホールド: BT解除&#10;ダブルタップ: BT解除&#10;Shift+: BT解除&#10;Ctrl+: BT解除&#10;&amp;bt BT_CLR"><span class="kt">BT解除</span></div>
+<div class="key none" style="left:156px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:208px;top:104px;width:48px;height:48px" title="タップ: BLE出力&#10;ホールド: BLE出力&#10;ダブルタップ: BLE出力&#10;Shift+: BLE出力&#10;Ctrl+: BLE出力&#10;&amp;out OUT_BLE"><span class="kt">BLE出力</span></div>
+<div class="key none" style="left:416px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:260px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+</div>
+<h3>VIM_VISUAL_BASE レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⇧⌃→&#10;ホールド: ⇧⌃→&#10;ダブルタップ: ⇧⌃→×2&#10;Shift+: ⇧⇧⌃→&#10;Ctrl+: ⌃⇧⌃→&#10;&amp;kp LS(LC(RIGHT))"><span class="kt">⇧⌃→</span></div>
+<div class="key" style="left:104px;top:0px;width:48px;height:48px" title="タップ: ⇧⌃→&#10;ホールド: ⇧⌃→&#10;ダブルタップ: ⇧⌃→×2&#10;Shift+: ⇧⇧⌃→&#10;Ctrl+: ⌃⇧⌃→&#10;&amp;kp LS(LC(RIGHT))"><span class="kt">⇧⌃→</span></div>
+<div class="key none" style="left:156px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_y"><span class="kt">LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY</span></div>
+<div class="key none" style="left:468px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:624px;top:0px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_p"><span class="kt">LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY</span></div>
+<div class="key" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"><span class="kt">LCtrl</span></div>
+<div class="key none" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:104px;top:52px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_cut"><span class="kt">LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY</span></div>
+<div class="key none" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:208px;top:52px;width:48px;height:48px" title="ダブルタップ: ⇧⌃HOME&#10;Shift+: ⇧⌃END&#10;&amp;mm_vim_visual_g"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ⇧←&#10;ホールド: ⇧←&#10;ダブルタップ: ⇧←×2&#10;Shift+: ⇧⇧←&#10;Ctrl+: ⌃⇧←&#10;&amp;kp LS(LEFT)"><span class="kt">⇧←</span></div>
+<div class="key" style="left:468px;top:52px;width:48px;height:48px" title="タップ: ⇧↓&#10;ホールド: ⇧↓&#10;ダブルタップ: ⇧↓×2&#10;Shift+: ⇧⇧↓&#10;Ctrl+: ⌃⇧↓&#10;&amp;kp LS(DOWN)"><span class="kt">⇧↓</span></div>
+<div class="key" style="left:520px;top:52px;width:48px;height:48px" title="タップ: ⇧↑&#10;ホールド: ⇧↑&#10;ダブルタップ: ⇧↑×2&#10;Shift+: ⇧⇧↑&#10;Ctrl+: ⌃⇧↑&#10;&amp;kp LS(UP)"><span class="kt">⇧↑</span></div>
+<div class="key" style="left:572px;top:52px;width:48px;height:48px" title="タップ: ⇧→&#10;ホールド: ⇧→&#10;ダブルタップ: ⇧→×2&#10;Shift+: ⇧⇧→&#10;Ctrl+: ⌃⇧→&#10;&amp;kp LS(RIGHT)"><span class="kt">⇧→</span></div>
+<div class="key" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"><span class="kt">RCtrl</span></div>
+<div class="key" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"><span class="kt">LShift</span></div>
+<div class="key" style="left:52px;top:104px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_cut"><span class="kt">LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY</span></div>
+<div class="key none" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:156px;top:104px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_exit"><span class="kt">LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY</span></div>
+<div class="key" style="left:208px;top:104px;width:48px;height:48px" title="タップ: ⇧⌃←&#10;ホールド: ⇧⌃←&#10;ダブルタップ: ⇧⌃←×2&#10;Shift+: ⇧⇧⌃←&#10;Ctrl+: ⌃⇧⌃←&#10;&amp;kp LS(LC(LEFT))"><span class="kt">⇧⌃←</span></div>
+<div class="key" style="left:416px;top:104px;width:48px;height:48px" title="タップ: F3&#10;ホールド: F3&#10;ダブルタップ: F3×2&#10;Shift+: ⇧F3&#10;Ctrl+: ⌃F3&#10;&amp;kp F3"><span class="kt">F3</span></div>
+<div class="key none" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"><span class="kt">RShift</span></div>
+<div class="key none" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:260px;top:156px;width:48px;height:48px" title="タップ: L9&#10;ホールド: L9&#10;ダブルタップ: L9&#10;Shift+: L9&#10;Ctrl+: L9&#10;&amp;mo VIM_VISUAL_SYM"><span class="kt">L9</span></div>
+<div class="key none" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:156px;width:48px;height:48px" title="タップ: L9&#10;ホールド: L9&#10;ダブルタップ: L9&#10;Shift+: L9&#10;Ctrl+: L9&#10;&amp;mo VIM_VISUAL_SYM"><span class="kt">L9</span></div>
+<div class="key none" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+</div>
+<h3>VIM_VISUAL_BASE レイヤー（Tap Dance: ダブルタップ）</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⇧⌃→&#10;ホールド: ⇧⌃→&#10;ダブルタップ: ⇧⌃→×2&#10;Shift+: ⇧⇧⌃→&#10;Ctrl+: ⌃⇧⌃→&#10;&amp;kp LS(LC(RIGHT))"></div>
+<div class="key dim" style="left:104px;top:0px;width:48px;height:48px" title="タップ: ⇧⌃→&#10;ホールド: ⇧⌃→&#10;ダブルタップ: ⇧⌃→×2&#10;Shift+: ⇧⇧⌃→&#10;Ctrl+: ⌃⇧⌃→&#10;&amp;kp LS(LC(RIGHT))"></div>
+<div class="key dim" style="left:156px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:0px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_y"></div>
+<div class="key dim" style="left:468px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:0px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_p"></div>
+<div class="key dim" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"></div>
+<div class="key dim" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:52px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_cut"></div>
+<div class="key dim" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:208px;top:52px;width:48px;height:48px" title="ダブルタップ: ⇧⌃HOME&#10;Shift+: ⇧⌃END&#10;&amp;mm_vim_visual_g"><span class="kt">⇧⌃HOME</span></div>
+<div class="key dim" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ⇧←&#10;ホールド: ⇧←&#10;ダブルタップ: ⇧←×2&#10;Shift+: ⇧⇧←&#10;Ctrl+: ⌃⇧←&#10;&amp;kp LS(LEFT)"></div>
+<div class="key dim" style="left:468px;top:52px;width:48px;height:48px" title="タップ: ⇧↓&#10;ホールド: ⇧↓&#10;ダブルタップ: ⇧↓×2&#10;Shift+: ⇧⇧↓&#10;Ctrl+: ⌃⇧↓&#10;&amp;kp LS(DOWN)"></div>
+<div class="key dim" style="left:520px;top:52px;width:48px;height:48px" title="タップ: ⇧↑&#10;ホールド: ⇧↑&#10;ダブルタップ: ⇧↑×2&#10;Shift+: ⇧⇧↑&#10;Ctrl+: ⌃⇧↑&#10;&amp;kp LS(UP)"></div>
+<div class="key dim" style="left:572px;top:52px;width:48px;height:48px" title="タップ: ⇧→&#10;ホールド: ⇧→&#10;ダブルタップ: ⇧→×2&#10;Shift+: ⇧⇧→&#10;Ctrl+: ⌃⇧→&#10;&amp;kp LS(RIGHT)"></div>
+<div class="key dim" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"></div>
+<div class="key dim" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"></div>
+<div class="key dim" style="left:52px;top:104px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_cut"></div>
+<div class="key dim" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:104px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_exit"></div>
+<div class="key dim" style="left:208px;top:104px;width:48px;height:48px" title="タップ: ⇧⌃←&#10;ホールド: ⇧⌃←&#10;ダブルタップ: ⇧⌃←×2&#10;Shift+: ⇧⇧⌃←&#10;Ctrl+: ⌃⇧⌃←&#10;&amp;kp LS(LC(LEFT))"></div>
+<div class="key dim" style="left:416px;top:104px;width:48px;height:48px" title="タップ: F3&#10;ホールド: F3&#10;ダブルタップ: F3×2&#10;Shift+: ⇧F3&#10;Ctrl+: ⌃F3&#10;&amp;kp F3"></div>
+<div class="key dim" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"></div>
+<div class="key dim" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:260px;top:156px;width:48px;height:48px" title="タップ: L9&#10;ホールド: L9&#10;ダブルタップ: L9&#10;Shift+: L9&#10;Ctrl+: L9&#10;&amp;mo VIM_VISUAL_SYM"></div>
+<div class="key dim" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:156px;width:48px;height:48px" title="タップ: L9&#10;ホールド: L9&#10;ダブルタップ: L9&#10;Shift+: L9&#10;Ctrl+: L9&#10;&amp;mo VIM_VISUAL_SYM"></div>
+<div class="key dim" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+</div>
+<h3>VIM_VISUAL_BASE レイヤー（Mod Morph: Shift+）</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⇧⌃→&#10;ホールド: ⇧⌃→&#10;ダブルタップ: ⇧⌃→×2&#10;Shift+: ⇧⇧⌃→&#10;Ctrl+: ⌃⇧⌃→&#10;&amp;kp LS(LC(RIGHT))"></div>
+<div class="key dim" style="left:104px;top:0px;width:48px;height:48px" title="タップ: ⇧⌃→&#10;ホールド: ⇧⌃→&#10;ダブルタップ: ⇧⌃→×2&#10;Shift+: ⇧⇧⌃→&#10;Ctrl+: ⌃⇧⌃→&#10;&amp;kp LS(LC(RIGHT))"></div>
+<div class="key dim" style="left:156px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:0px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃C ▸ → ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_y"></div>
+<div class="key dim" style="left:468px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:0px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃V ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_p"></div>
+<div class="key dim" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"></div>
+<div class="key dim" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:52px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_cut"></div>
+<div class="key dim" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:208px;top:52px;width:48px;height:48px" title="ダブルタップ: ⇧⌃HOME&#10;Shift+: ⇧⌃END&#10;&amp;mm_vim_visual_g"><span class="kt">⇧⌃END</span></div>
+<div class="key dim" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ⇧←&#10;ホールド: ⇧←&#10;ダブルタップ: ⇧←×2&#10;Shift+: ⇧⇧←&#10;Ctrl+: ⌃⇧←&#10;&amp;kp LS(LEFT)"></div>
+<div class="key dim" style="left:468px;top:52px;width:48px;height:48px" title="タップ: ⇧↓&#10;ホールド: ⇧↓&#10;ダブルタップ: ⇧↓×2&#10;Shift+: ⇧⇧↓&#10;Ctrl+: ⌃⇧↓&#10;&amp;kp LS(DOWN)"></div>
+<div class="key dim" style="left:520px;top:52px;width:48px;height:48px" title="タップ: ⇧↑&#10;ホールド: ⇧↑&#10;ダブルタップ: ⇧↑×2&#10;Shift+: ⇧⇧↑&#10;Ctrl+: ⌃⇧↑&#10;&amp;kp LS(UP)"></div>
+<div class="key dim" style="left:572px;top:52px;width:48px;height:48px" title="タップ: ⇧→&#10;ホールド: ⇧→&#10;ダブルタップ: ⇧→×2&#10;Shift+: ⇧⇧→&#10;Ctrl+: ⌃⇧→&#10;&amp;kp LS(RIGHT)"></div>
+<div class="key dim" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"></div>
+<div class="key dim" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"></div>
+<div class="key dim" style="left:52px;top:104px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ ⌃X ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_cut"></div>
+<div class="key dim" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:104px;width:48px;height:48px" title="タップ: LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;ホールド: LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;ダブルタップ: LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY×2&#10;Shift+: ⇧LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;Ctrl+: ⌃LShift ▸ RShift ▸ → ▸ ⇒BASE_QWERTY&#10;&amp;macro_vim_visual_exit"></div>
+<div class="key dim" style="left:208px;top:104px;width:48px;height:48px" title="タップ: ⇧⌃←&#10;ホールド: ⇧⌃←&#10;ダブルタップ: ⇧⌃←×2&#10;Shift+: ⇧⇧⌃←&#10;Ctrl+: ⌃⇧⌃←&#10;&amp;kp LS(LC(LEFT))"></div>
+<div class="key dim" style="left:416px;top:104px;width:48px;height:48px" title="タップ: F3&#10;ホールド: F3&#10;ダブルタップ: F3×2&#10;Shift+: ⇧F3&#10;Ctrl+: ⌃F3&#10;&amp;kp F3"></div>
+<div class="key dim" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"></div>
+<div class="key dim" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:260px;top:156px;width:48px;height:48px" title="タップ: L9&#10;ホールド: L9&#10;ダブルタップ: L9&#10;Shift+: L9&#10;Ctrl+: L9&#10;&amp;mo VIM_VISUAL_SYM"></div>
+<div class="key dim" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:156px;width:48px;height:48px" title="タップ: L9&#10;ホールド: L9&#10;ダブルタップ: L9&#10;Shift+: L9&#10;Ctrl+: L9&#10;&amp;mo VIM_VISUAL_SYM"></div>
+<div class="key dim" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+</div>
+<h3>VIM_VISUAL_SYM レイヤー</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="Shift+: ⇧END&#10;&amp;mm_vim_visual_shift_4"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="Shift+: ⇧HOME&#10;&amp;mm_vim_visual_shift_6"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:624px;top:0px;width:48px;height:48px" title="タップ: ⇧HOME&#10;ホールド: ⇧HOME&#10;ダブルタップ: ⇧HOME×2&#10;Shift+: ⇧⇧HOME&#10;Ctrl+: ⌃⇧HOME&#10;&amp;kp LS(HOME)"><span class="kt">⇧HOME</span></div>
+<div class="key" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"><span class="kt">LCtrl</span></div>
+<div class="key none" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ⇧←&#10;ホールド: ⇧←&#10;ダブルタップ: ⇧←×2&#10;Shift+: ⇧⇧←&#10;Ctrl+: ⌃⇧←&#10;&amp;kp LS(LEFT)"><span class="kt">⇧←</span></div>
+<div class="key none" style="left:468px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:52px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"><span class="kt">RCtrl</span></div>
+<div class="key" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"><span class="kt">LShift</span></div>
+<div class="key none" style="left:52px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"><span class="kt">RShift</span></div>
+<div class="key none" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:52px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:104px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:260px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:416px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+<div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
+</div>
+<h3>VIM_VISUAL_SYM レイヤー（Mod Morph: Shift+）</h3>
+<div class="kb" style="width:676px;height:208px">
+<div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:156px;top:0px;width:48px;height:48px" title="Shift+: ⇧END&#10;&amp;mm_vim_visual_shift_4"><span class="kt">⇧END</span></div>
+<div class="key dim" style="left:208px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key" style="left:416px;top:0px;width:48px;height:48px" title="Shift+: ⇧HOME&#10;&amp;mm_vim_visual_shift_6"><span class="kt">⇧HOME</span></div>
+<div class="key dim" style="left:468px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:0px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:0px;width:48px;height:48px" title="タップ: ⇧HOME&#10;ホールド: ⇧HOME&#10;ダブルタップ: ⇧HOME×2&#10;Shift+: ⇧⇧HOME&#10;Ctrl+: ⌃⇧HOME&#10;&amp;kp LS(HOME)"></div>
+<div class="key dim" style="left:0px;top:52px;width:48px;height:48px" title="タップ: LCtrl&#10;ホールド: LCtrl&#10;ダブルタップ: LCtrl×2&#10;Shift+: ⇧LCtrl&#10;Ctrl+: ⌃LCtrl&#10;&amp;kp LCTRL"></div>
+<div class="key dim" style="left:52px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:52px;width:48px;height:48px" title="タップ: ⇧←&#10;ホールド: ⇧←&#10;ダブルタップ: ⇧←×2&#10;Shift+: ⇧⇧←&#10;Ctrl+: ⌃⇧←&#10;&amp;kp LS(LEFT)"></div>
+<div class="key dim" style="left:468px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:52px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:52px;width:48px;height:48px" title="タップ: RCtrl&#10;ホールド: RCtrl&#10;ダブルタップ: RCtrl×2&#10;Shift+: ⇧RCtrl&#10;Ctrl+: ⌃RCtrl&#10;&amp;kp RCTRL"></div>
+<div class="key dim" style="left:0px;top:104px;width:48px;height:48px" title="タップ: LShift&#10;ホールド: LShift&#10;ダブルタップ: LShift×2&#10;Shift+: ⇧LShift&#10;Ctrl+: ⌃LShift&#10;&amp;kp LEFT_SHIFT"></div>
+<div class="key dim" style="left:52px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:468px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:104px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:104px;width:48px;height:48px" title="タップ: RShift&#10;ホールド: RShift&#10;ダブルタップ: RShift×2&#10;Shift+: ⇧RShift&#10;Ctrl+: ⌃RShift&#10;&amp;kp RIGHT_SHIFT"></div>
+<div class="key dim" style="left:0px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:52px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:104px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:156px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:208px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:260px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:364px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:416px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:468px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:520px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+<div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
+</div>
+<h2>動作</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th></th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+</tr>
+</thead>
+<tbody>
+<tr class="layer-row"><th colspan="14">BASE_QWERTY レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;kp Q</code></td>
+<td>pos 1<br><code>&amp;kp W</code></td>
+<td>pos 2<br><code>&amp;kp E</code></td>
+<td>pos 3<br><code>&amp;kp R</code></td>
+<td>pos 4<br><code>&amp;kp T</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;kp Y</code></td>
+<td>pos 6<br><code>&amp;kp U</code></td>
+<td>pos 7<br><code>&amp;kp I</code></td>
+<td>pos 8<br><code>&amp;kp O</code></td>
+<td>pos 9<br><code>&amp;kp P</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>Q</td>
+<td>W</td>
+<td>E</td>
+<td>R</td>
+<td>T</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Y</td>
+<td>U</td>
+<td>I</td>
+<td>O</td>
+<td>P</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;mt LEFT_CONTROL A</code></td>
+<td>pos 11<br><code>&amp;kp S</code></td>
+<td>pos 12<br><code>&amp;kp D</code></td>
+<td>pos 13<br><code>&amp;kp F</code></td>
+<td>pos 14<br><code>&amp;kp G</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp H</code></td>
+<td>pos 16<br><code>&amp;kp J</code></td>
+<td>pos 17<br><code>&amp;kp K</code></td>
+<td>pos 18<br><code>&amp;kp L</code></td>
+<td>pos 19<br><code>&amp;mt RCTRL MINUS</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>A</td>
+<td>S</td>
+<td>D</td>
+<td>F</td>
+<td>G</td>
+<td></td>
+<td></td>
+<td></td>
+<td>H</td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>LCtrl</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>RCtrl</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;mt LEFT_SHIFT Z</code></td>
+<td>pos 21<br><code>&amp;kp X</code></td>
+<td>pos 22<br><code>&amp;kp C</code></td>
+<td>pos 23<br><code>&amp;kp V</code></td>
+<td>pos 24<br><code>&amp;kp B</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;kp N</code></td>
+<td>pos 26<br><code>&amp;kp M</code></td>
+<td>pos 27<br><code>&amp;kp COMMA</code></td>
+<td>pos 28<br><code>&amp;kp PERIOD</code></td>
+<td>pos 29<br><code>&amp;mt RIGHT_SHIFT SLASH</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>Z</td>
+<td>X</td>
+<td>C</td>
+<td>V</td>
+<td>B</td>
+<td></td>
+<td></td>
+<td></td>
+<td>N</td>
+<td>M</td>
+<td>,</td>
+<td>.</td>
+<td>/</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>LShift</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>RShift</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;mo FUNCTION</code></td>
+<td>pos 31<br><code>&amp;kp LEFT_WIN</code></td>
+<td>pos 32<br><code>&amp;kp LEFT_ALT</code></td>
+<td>pos 33<br><code>&amp;lt VIM_NORMAL_BASE SPACE</code></td>
+<td>pos 34<br><code>&amp;lt VIM_NORMAL_BASE SPACE</code></td>
+<td>pos 35<br><code>&amp;mo NUM_SYMBOL</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;mo BLUETOOTH</code></td>
+<td>pos 37<br><code>&amp;lt NUM_SYMBOL ENTER</code></td>
+<td>pos 38<br><code>&amp;mo BLUETOOTH</code></td>
+<td>pos 39<br><code>&amp;mo VIM_NORMAL_BASE</code></td>
+<td>pos 40<br><code>&amp;mo FUNCTION</code></td>
+<td>pos 41<br><code>&amp;mo FUNCTION</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>L6</td>
+<td>LWin</td>
+<td>LAlt</td>
+<td>SPACE</td>
+<td>SPACE</td>
+<td>L1</td>
+<td></td>
+<td>L7</td>
+<td>ENTER</td>
+<td>L7</td>
+<td>L2</td>
+<td>L6</td>
+<td>L6</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>L2</td>
+<td>L2</td>
+<td>〃</td>
+<td></td>
+<td>〃</td>
+<td>L1</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr class="layer-row"><th colspan="14">NUM_SYMBOL レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;kp N1</code></td>
+<td>pos 1<br><code>&amp;kp N2</code></td>
+<td>pos 2<br><code>&amp;kp N3</code></td>
+<td>pos 3<br><code>&amp;kp N4</code></td>
+<td>pos 4<br><code>&amp;kp N5</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;kp N6</code></td>
+<td>pos 6<br><code>&amp;kp N7</code></td>
+<td>pos 7<br><code>&amp;kp N8</code></td>
+<td>pos 8<br><code>&amp;kp N9</code></td>
+<td>pos 9<br><code>&amp;kp N0</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td></td>
+<td></td>
+<td></td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>0</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;mt LCTRL TAB</code></td>
+<td>pos 11<br><code>&amp;kp GRAVE</code></td>
+<td>pos 12<br><code>&amp;kp LEFT_BRACKET</code></td>
+<td>pos 13<br><code>&amp;kp RIGHT_BRACKET</code></td>
+<td>pos 14<br><code>&amp;kp DELETE</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp BACKSPACE</code></td>
+<td>pos 16<br><code>&amp;kp SEMICOLON</code></td>
+<td>pos 17<br><code>&amp;kp SINGLE_QUOTE</code></td>
+<td>pos 18<br><code>&amp;kp BACKSLASH</code></td>
+<td>pos 19<br><code>&amp;trans</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>TAB</td>
+<td>&#96;</td>
+<td>[</td>
+<td>]</td>
+<td>DEL</td>
+<td></td>
+<td></td>
+<td></td>
+<td>BS</td>
+<td>;</td>
+<td>'</td>
+<td>&#92;</td>
+<td>▽</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>LCtrl</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;mt LEFT_SHIFT ESCAPE</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;kp EQUAL</code></td>
+<td>pos 27<br><code>&amp;trans</code></td>
+<td>pos 28<br><code>&amp;trans</code></td>
+<td>pos 29<br><code>&amp;trans</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>ESC</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>=</td>
+<td>▽</td>
+<td>▽</td>
+<td>▽</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>LShift</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;trans</code></td>
+<td>pos 32<br><code>&amp;trans</code></td>
+<td>pos 33<br><code>&amp;lt VIM_NORMAL_SYM SPACE</code></td>
+<td>pos 34<br><code>&amp;lt VIM_NORMAL_SYM SPACE</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;mo VIM_NORMAL_SYM</code></td>
+<td>pos 40<br><code>&amp;trans</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>▽</td>
+<td>▽</td>
+<td>SPACE</td>
+<td>SPACE</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>L3</td>
+<td>▽</td>
+<td></td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>L3</td>
+<td>L3</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">VIM_NORMAL_BASE レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;mm_vim_w</code></td>
+<td>pos 2<br><code>&amp;kp LC(RIGHT)</code></td>
+<td>pos 3<br><code>&amp;mm_vim_ctrl_r</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;mm_vim_y</code></td>
+<td>pos 6<br><code>&amp;mm_vim_u</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;mm_vim_o</code></td>
+<td>pos 9<br><code>&amp;kp LC(V)</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>⌃→</td>
+<td>⌃→</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>⌃Z</td>
+<td></td>
+<td><span class="ml">END<br>▸ ENTER</span></td>
+<td>⌃V</td>
+</tr>
+<tr>
+<td>ダブルタップ</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">HOME<br>▸ ⇧END<br>▸ ⌃C</span></td>
+<td>〃</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">⇧END<br>▸ ⌃C</span></td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">HOME<br>▸ ENTER<br>▸ ↑</span></td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Ctrl+</td>
+<td></td>
+<td>⌃BS</td>
+<td>〃</td>
+<td>⌃Y</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>PgUp</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;kp LCTRL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;mm_vim_d</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;mm_vim_g</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp LEFT</code></td>
+<td>pos 16<br><code>&amp;mm_vim_j</code></td>
+<td>pos 17<br><code>&amp;kp UP_ARROW</code></td>
+<td>pos 18<br><code>&amp;kp RIGHT</code></td>
+<td>pos 19<br><code>&amp;kp RCTRL</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>LCtrl</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>←</td>
+<td>↓</td>
+<td>↑</td>
+<td>→</td>
+<td>RCtrl</td>
+</tr>
+<tr>
+<td>ダブルタップ</td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">HOME<br>▸ ⇧END<br>▸ ⌃X</span></td>
+<td></td>
+<td>⌃HOME</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">⇧END<br>▸ ⌃X</span></td>
+<td></td>
+<td>⌃END</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td><span class="ml">END<br>▸ DEL<br>▸ SPACE</span></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Ctrl+</td>
+<td>〃</td>
+<td></td>
+<td>PgDn</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;kp LEFT_SHIFT</code></td>
+<td>pos 21<br><code>&amp;kp DELETE</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;mm_vim_v</code></td>
+<td>pos 24<br><code>&amp;kp LC(LEFT)</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;mm_vim_n</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;kp RIGHT_SHIFT</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>LShift</td>
+<td>DEL</td>
+<td></td>
+<td>⇒VIM_VISUAL_BASE</td>
+<td>⌃←</td>
+<td></td>
+<td></td>
+<td></td>
+<td>F3</td>
+<td></td>
+<td></td>
+<td></td>
+<td>RShift</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">HOME<br>▸ ⇧↓<br>▸ ⇒VIM_VISUAL_BASE</span></td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;trans</code></td>
+<td>pos 32<br><code>&amp;trans</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;mo VIM_NORMAL_SYM</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;lt VIM_NORMAL_SYM ENTER</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;trans</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>▽</td>
+<td>▽</td>
+<td></td>
+<td></td>
+<td>L3</td>
+<td></td>
+<td></td>
+<td>ENTER</td>
+<td></td>
+<td></td>
+<td>▽</td>
+<td></td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td>L3</td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">VIM_NORMAL_SYM レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;none</code></td>
+<td>pos 2<br><code>&amp;none</code></td>
+<td>pos 3<br><code>&amp;mm_vim_shift_4</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;mm_vim_shift_6</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;kp HOME</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>HOME</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td></td>
+<td></td>
+<td></td>
+<td>END</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>HOME</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;kp LCTRL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp LEFT</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;none</code></td>
+<td>pos 19<br><code>&amp;kp RCTRL</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>LCtrl</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>←</td>
+<td></td>
+<td></td>
+<td></td>
+<td>RCtrl</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;kp LEFT_SHIFT</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;kp RIGHT_SHIFT</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>LShift</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>RShift</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;trans</code></td>
+<td>pos 32<br><code>&amp;trans</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;trans</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>▽</td>
+<td>▽</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>▽</td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">MOUSE_MOVE レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;none</code></td>
+<td>pos 2<br><code>&amp;none</code></td>
+<td>pos 3<br><code>&amp;none</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;none</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;none</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;none</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;mo MOUSE_SCROLL</code></td>
+<td>pos 18<br><code>&amp;none</code></td>
+<td>pos 19<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>L5</td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;none</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">MOUSE_SCROLL レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;none</code></td>
+<td>pos 2<br><code>&amp;none</code></td>
+<td>pos 3<br><code>&amp;none</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;none</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;none</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;none</code></td>
+<td>pos 16<br><code>&amp;mkp MB1</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;mkp MB2</code></td>
+<td>pos 19<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>🖱左</td>
+<td></td>
+<td>🖱右</td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;none</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;mkp MB4</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;mkp MB5</code></td>
+<td>pos 29<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>🖱戻</td>
+<td></td>
+<td>🖱進</td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">FUNCTION レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;kp F1</code></td>
+<td>pos 1<br><code>&amp;kp F2</code></td>
+<td>pos 2<br><code>&amp;kp F3</code></td>
+<td>pos 3<br><code>&amp;kp F4</code></td>
+<td>pos 4<br><code>&amp;kp F5</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;kp F6</code></td>
+<td>pos 6<br><code>&amp;kp F7</code></td>
+<td>pos 7<br><code>&amp;kp F8</code></td>
+<td>pos 8<br><code>&amp;kp F9</code></td>
+<td>pos 9<br><code>&amp;kp F10</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>F1</td>
+<td>F2</td>
+<td>F3</td>
+<td>F4</td>
+<td>F5</td>
+<td></td>
+<td></td>
+<td></td>
+<td>F6</td>
+<td>F7</td>
+<td>F8</td>
+<td>F9</td>
+<td>F10</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;none</code></td>
+<td>pos 11<br><code>&amp;sys_reset</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;none</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;sys_reset</code></td>
+<td>pos 19<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>リセット</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>リセット</td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;none</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;bootloader</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;bootloader</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>ブートローダ</td>
+<td></td>
+<td></td>
+<td></td>
+<td>ブートローダ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">BLUETOOTH レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;bt BT_SEL 0</code></td>
+<td>pos 1<br><code>&amp;bt BT_SEL 1</code></td>
+<td>pos 2<br><code>&amp;bt BT_SEL 2</code></td>
+<td>pos 3<br><code>&amp;bt BT_SEL 3</code></td>
+<td>pos 4<br><code>&amp;bt BT_SEL 4</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;none</code></td>
+<td>pos 6<br><code>&amp;out OUT_USB</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>BT0</td>
+<td>BT1</td>
+<td>BT2</td>
+<td>BT3</td>
+<td>BT4</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>USB出力</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;bt BT_CLR_ALL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;none</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;none</code></td>
+<td>pos 19<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>BT全解除</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;none</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;bt BT_CLR</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;out OUT_BLE</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td>BT解除</td>
+<td></td>
+<td>BLE出力</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">VIM_VISUAL_BASE レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;kp LS(LC(RIGHT))</code></td>
+<td>pos 2<br><code>&amp;kp LS(LC(RIGHT))</code></td>
+<td>pos 3<br><code>&amp;none</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;macro_vim_visual_y</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;macro_vim_visual_p</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>⇧⌃→</td>
+<td>⇧⌃→</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">LShift<br>▸ RShift<br>▸ ⌃C<br>▸ →<br>▸ ⇒BASE_QWERTY</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">LShift<br>▸ RShift<br>▸ ⌃V<br>▸ ⇒BASE_QWERTY</span></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;kp LCTRL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;macro_vim_visual_cut</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;mm_vim_visual_g</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp LS(LEFT)</code></td>
+<td>pos 16<br><code>&amp;kp LS(DOWN)</code></td>
+<td>pos 17<br><code>&amp;kp LS(UP)</code></td>
+<td>pos 18<br><code>&amp;kp LS(RIGHT)</code></td>
+<td>pos 19<br><code>&amp;kp RCTRL</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>LCtrl</td>
+<td></td>
+<td><span class="ml">LShift<br>▸ RShift<br>▸ ⌃X<br>▸ ⇒BASE_QWERTY</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>⇧←</td>
+<td>⇧↓</td>
+<td>⇧↑</td>
+<td>⇧→</td>
+<td>RCtrl</td>
+</tr>
+<tr>
+<td>ダブルタップ</td>
+<td>〃</td>
+<td></td>
+<td>〃</td>
+<td></td>
+<td>⇧⌃HOME</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td>〃</td>
+<td></td>
+<td>〃</td>
+<td></td>
+<td>⇧⌃END</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;kp LEFT_SHIFT</code></td>
+<td>pos 21<br><code>&amp;macro_vim_visual_cut</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;macro_vim_visual_exit</code></td>
+<td>pos 24<br><code>&amp;kp LS(LC(LEFT))</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;kp F3</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;kp RIGHT_SHIFT</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>LShift</td>
+<td><span class="ml">LShift<br>▸ RShift<br>▸ ⌃X<br>▸ ⇒BASE_QWERTY</span></td>
+<td></td>
+<td><span class="ml">LShift<br>▸ RShift<br>▸ →<br>▸ ⇒BASE_QWERTY</span></td>
+<td>⇧⌃←</td>
+<td></td>
+<td></td>
+<td></td>
+<td>F3</td>
+<td></td>
+<td></td>
+<td></td>
+<td>RShift</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;mo VIM_VISUAL_SYM</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;mo VIM_VISUAL_SYM</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>L9</td>
+<td></td>
+<td></td>
+<td>L9</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">VIM_VISUAL_SYM レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;none</code></td>
+<td>pos 2<br><code>&amp;none</code></td>
+<td>pos 3<br><code>&amp;mm_vim_visual_shift_4</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;mm_vim_visual_shift_6</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;kp LS(HOME)</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>⇧HOME</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td></td>
+<td></td>
+<td></td>
+<td>⇧END</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>⇧HOME</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;kp LCTRL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp LS(LEFT)</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;none</code></td>
+<td>pos 19<br><code>&amp;kp RCTRL</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>LCtrl</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>⇧←</td>
+<td></td>
+<td></td>
+<td></td>
+<td>RCtrl</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;kp LEFT_SHIFT</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;kp RIGHT_SHIFT</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>LShift</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>RShift</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>経路</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th></th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+</tr>
+</thead>
+<tbody>
+<tr class="layer-row"><th colspan="14">BASE_QWERTY レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;kp Q</code></td>
+<td>pos 1<br><code>&amp;kp W</code></td>
+<td>pos 2<br><code>&amp;kp E</code></td>
+<td>pos 3<br><code>&amp;kp R</code></td>
+<td>pos 4<br><code>&amp;kp T</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;kp Y</code></td>
+<td>pos 6<br><code>&amp;kp U</code></td>
+<td>pos 7<br><code>&amp;kp I</code></td>
+<td>pos 8<br><code>&amp;kp O</code></td>
+<td>pos 9<br><code>&amp;kp P</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp Q</td>
+<td>&amp;kp W</td>
+<td>&amp;kp E</td>
+<td>&amp;kp R</td>
+<td>&amp;kp T</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp Y</td>
+<td>&amp;kp U</td>
+<td>&amp;kp I</td>
+<td>&amp;kp O</td>
+<td>&amp;kp P</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;mt LEFT_CONTROL A</code></td>
+<td>pos 11<br><code>&amp;kp S</code></td>
+<td>pos 12<br><code>&amp;kp D</code></td>
+<td>pos 13<br><code>&amp;kp F</code></td>
+<td>pos 14<br><code>&amp;kp G</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp H</code></td>
+<td>pos 16<br><code>&amp;kp J</code></td>
+<td>pos 17<br><code>&amp;kp K</code></td>
+<td>pos 18<br><code>&amp;kp L</code></td>
+<td>pos 19<br><code>&amp;mt RCTRL MINUS</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;mt LEFT_CONTROL A</td>
+<td>&amp;kp S</td>
+<td>&amp;kp D</td>
+<td>&amp;kp F</td>
+<td>&amp;kp G</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp H</td>
+<td>&amp;kp J</td>
+<td>&amp;kp K</td>
+<td>&amp;kp L</td>
+<td>&amp;mt RCTRL MINUS</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>&amp;mt LEFT_CONTROL A</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>&amp;mt RCTRL MINUS</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;mt LEFT_SHIFT Z</code></td>
+<td>pos 21<br><code>&amp;kp X</code></td>
+<td>pos 22<br><code>&amp;kp C</code></td>
+<td>pos 23<br><code>&amp;kp V</code></td>
+<td>pos 24<br><code>&amp;kp B</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;kp N</code></td>
+<td>pos 26<br><code>&amp;kp M</code></td>
+<td>pos 27<br><code>&amp;kp COMMA</code></td>
+<td>pos 28<br><code>&amp;kp PERIOD</code></td>
+<td>pos 29<br><code>&amp;mt RIGHT_SHIFT SLASH</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;mt LEFT_SHIFT Z</td>
+<td>&amp;kp X</td>
+<td>&amp;kp C</td>
+<td>&amp;kp V</td>
+<td>&amp;kp B</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp N</td>
+<td>&amp;kp M</td>
+<td>&amp;kp COMMA</td>
+<td>&amp;kp PERIOD</td>
+<td>&amp;mt RIGHT_SHIFT SLASH</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>&amp;mt LEFT_SHIFT Z</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>&amp;mt RIGHT_SHIFT SLASH</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;mo FUNCTION</code></td>
+<td>pos 31<br><code>&amp;kp LEFT_WIN</code></td>
+<td>pos 32<br><code>&amp;kp LEFT_ALT</code></td>
+<td>pos 33<br><code>&amp;lt VIM_NORMAL_BASE SPACE</code></td>
+<td>pos 34<br><code>&amp;lt VIM_NORMAL_BASE SPACE</code></td>
+<td>pos 35<br><code>&amp;mo NUM_SYMBOL</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;mo BLUETOOTH</code></td>
+<td>pos 37<br><code>&amp;lt NUM_SYMBOL ENTER</code></td>
+<td>pos 38<br><code>&amp;mo BLUETOOTH</code></td>
+<td>pos 39<br><code>&amp;mo VIM_NORMAL_BASE</code></td>
+<td>pos 40<br><code>&amp;mo FUNCTION</code></td>
+<td>pos 41<br><code>&amp;mo FUNCTION</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;mo FUNCTION</td>
+<td>&amp;kp LEFT_WIN</td>
+<td>&amp;kp LEFT_ALT</td>
+<td>&amp;lt VIM_NORMAL_BASE SPACE</td>
+<td>&amp;lt VIM_NORMAL_BASE SPACE</td>
+<td>&amp;mo NUM_SYMBOL</td>
+<td></td>
+<td>&amp;mo BLUETOOTH</td>
+<td>&amp;lt NUM_SYMBOL ENTER</td>
+<td>&amp;mo BLUETOOTH</td>
+<td>&amp;mo VIM_NORMAL_BASE</td>
+<td>&amp;mo FUNCTION</td>
+<td>&amp;mo FUNCTION</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>&amp;lt VIM_NORMAL_BASE SPACE</td>
+<td>&amp;lt VIM_NORMAL_BASE SPACE</td>
+<td>〃</td>
+<td></td>
+<td>〃</td>
+<td>&amp;lt NUM_SYMBOL ENTER</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr class="layer-row"><th colspan="14">NUM_SYMBOL レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;kp N1</code></td>
+<td>pos 1<br><code>&amp;kp N2</code></td>
+<td>pos 2<br><code>&amp;kp N3</code></td>
+<td>pos 3<br><code>&amp;kp N4</code></td>
+<td>pos 4<br><code>&amp;kp N5</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;kp N6</code></td>
+<td>pos 6<br><code>&amp;kp N7</code></td>
+<td>pos 7<br><code>&amp;kp N8</code></td>
+<td>pos 8<br><code>&amp;kp N9</code></td>
+<td>pos 9<br><code>&amp;kp N0</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp N1</td>
+<td>&amp;kp N2</td>
+<td>&amp;kp N3</td>
+<td>&amp;kp N4</td>
+<td>&amp;kp N5</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp N6</td>
+<td>&amp;kp N7</td>
+<td>&amp;kp N8</td>
+<td>&amp;kp N9</td>
+<td>&amp;kp N0</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;mt LCTRL TAB</code></td>
+<td>pos 11<br><code>&amp;kp GRAVE</code></td>
+<td>pos 12<br><code>&amp;kp LEFT_BRACKET</code></td>
+<td>pos 13<br><code>&amp;kp RIGHT_BRACKET</code></td>
+<td>pos 14<br><code>&amp;kp DELETE</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp BACKSPACE</code></td>
+<td>pos 16<br><code>&amp;kp SEMICOLON</code></td>
+<td>pos 17<br><code>&amp;kp SINGLE_QUOTE</code></td>
+<td>pos 18<br><code>&amp;kp BACKSLASH</code></td>
+<td>pos 19<br><code>&amp;trans</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;mt LCTRL TAB</td>
+<td>&amp;kp GRAVE</td>
+<td>&amp;kp LEFT_BRACKET</td>
+<td>&amp;kp RIGHT_BRACKET</td>
+<td>&amp;kp DELETE</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp BACKSPACE</td>
+<td>&amp;kp SEMICOLON</td>
+<td>&amp;kp SINGLE_QUOTE</td>
+<td>&amp;kp BACKSLASH</td>
+<td>▽</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>&amp;mt LCTRL TAB</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;mt LEFT_SHIFT ESCAPE</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;kp EQUAL</code></td>
+<td>pos 27<br><code>&amp;trans</code></td>
+<td>pos 28<br><code>&amp;trans</code></td>
+<td>pos 29<br><code>&amp;trans</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;mt LEFT_SHIFT ESCAPE</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp EQUAL</td>
+<td>▽</td>
+<td>▽</td>
+<td>▽</td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td>&amp;mt LEFT_SHIFT ESCAPE</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;trans</code></td>
+<td>pos 32<br><code>&amp;trans</code></td>
+<td>pos 33<br><code>&amp;lt VIM_NORMAL_SYM SPACE</code></td>
+<td>pos 34<br><code>&amp;lt VIM_NORMAL_SYM SPACE</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;mo VIM_NORMAL_SYM</code></td>
+<td>pos 40<br><code>&amp;trans</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>▽</td>
+<td>▽</td>
+<td>&amp;lt VIM_NORMAL_SYM SPACE</td>
+<td>&amp;lt VIM_NORMAL_SYM SPACE</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;mo VIM_NORMAL_SYM</td>
+<td>▽</td>
+<td></td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>&amp;lt VIM_NORMAL_SYM SPACE</td>
+<td>&amp;lt VIM_NORMAL_SYM SPACE</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">VIM_NORMAL_BASE レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;mm_vim_w</code></td>
+<td>pos 2<br><code>&amp;kp LC(RIGHT)</code></td>
+<td>pos 3<br><code>&amp;mm_vim_ctrl_r</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;mm_vim_y</code></td>
+<td>pos 6<br><code>&amp;mm_vim_u</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;mm_vim_o</code></td>
+<td>pos 9<br><code>&amp;kp LC(V)</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td><span class="ml">mm_vim_w[0]<br>▸ &amp;kp LC(RIGHT)</span></td>
+<td>&amp;kp LC(RIGHT)</td>
+<td><span class="ml">mm_vim_ctrl_r[0]<br>▸ &amp;none</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_y[0]<br>▸ td_vim_y[0]<br>▸ &amp;none</span></td>
+<td><span class="ml">mm_vim_u[0]<br>▸ &amp;kp LC(Z)</span></td>
+<td></td>
+<td><span class="ml">mm_vim_o[0]<br>▸ macro_vim_o</span></td>
+<td>&amp;kp LC(V)</td>
+</tr>
+<tr>
+<td>ダブルタップ</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_y[0]<br>▸ td_vim_y[1]<br>▸ macro_vim_yy</span></td>
+<td>〃</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_y[1]<br>▸ macro_vim_shift_y</span></td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">mm_vim_o[1]<br>▸ macro_vim_shift_o</span></td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Ctrl+</td>
+<td></td>
+<td><span class="ml">mm_vim_w[1]<br>▸ &amp;kp LC(BACKSPACE)</span></td>
+<td>〃</td>
+<td><span class="ml">mm_vim_ctrl_r[1]<br>▸ &amp;kp LC(Y)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_u[1]<br>▸ &amp;kp PAGE_UP</span></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;kp LCTRL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;mm_vim_d</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;mm_vim_g</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp LEFT</code></td>
+<td>pos 16<br><code>&amp;mm_vim_j</code></td>
+<td>pos 17<br><code>&amp;kp UP_ARROW</code></td>
+<td>pos 18<br><code>&amp;kp RIGHT</code></td>
+<td>pos 19<br><code>&amp;kp RCTRL</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp LCTRL</td>
+<td></td>
+<td><span class="ml">mm_vim_d[0]<br>▸ mm_vim_shift_d[0]<br>▸ td_vim_d[0]<br>▸ &amp;none</span></td>
+<td></td>
+<td><span class="ml">mm_vim_g[0]<br>▸ td_vim_g[0]<br>▸ &amp;none</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp LEFT</td>
+<td><span class="ml">mm_vim_j[0]<br>▸ &amp;kp DOWN</span></td>
+<td>&amp;kp UP_ARROW</td>
+<td>&amp;kp RIGHT</td>
+<td>&amp;kp RCTRL</td>
+</tr>
+<tr>
+<td>ダブルタップ</td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">mm_vim_d[0]<br>▸ mm_vim_shift_d[0]<br>▸ td_vim_d[1]<br>▸ macro_vim_dd</span></td>
+<td></td>
+<td><span class="ml">mm_vim_g[0]<br>▸ td_vim_g[1]<br>▸ &amp;kp LC(HOME)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">mm_vim_d[0]<br>▸ mm_vim_shift_d[1]<br>▸ macro_vim_shift_d</span></td>
+<td></td>
+<td><span class="ml">mm_vim_g[1]<br>▸ &amp;kp LC(END)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td><span class="ml">mm_vim_j[1]<br>▸ macro_vim_join</span></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Ctrl+</td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">mm_vim_d[1]<br>▸ &amp;kp PAGE_DOWN</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;kp LEFT_SHIFT</code></td>
+<td>pos 21<br><code>&amp;kp DELETE</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;mm_vim_v</code></td>
+<td>pos 24<br><code>&amp;kp LC(LEFT)</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;mm_vim_n</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;kp RIGHT_SHIFT</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp LEFT_SHIFT</td>
+<td>&amp;kp DELETE</td>
+<td></td>
+<td><span class="ml">mm_vim_v[0]<br>▸ &amp;to VIM_VISUAL_BASE</span></td>
+<td>&amp;kp LC(LEFT)</td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_n[0]<br>▸ &amp;kp F3</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp RIGHT_SHIFT</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">mm_vim_v[1]<br>▸ macro_vim_v_line</span></td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;trans</code></td>
+<td>pos 32<br><code>&amp;trans</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;mo VIM_NORMAL_SYM</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;lt VIM_NORMAL_SYM ENTER</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;trans</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>▽</td>
+<td>▽</td>
+<td></td>
+<td></td>
+<td>&amp;mo VIM_NORMAL_SYM</td>
+<td></td>
+<td></td>
+<td>&amp;lt VIM_NORMAL_SYM ENTER</td>
+<td></td>
+<td></td>
+<td>▽</td>
+<td></td>
+</tr>
+<tr>
+<td>ホールド</td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td></td>
+<td></td>
+<td>&amp;lt VIM_NORMAL_SYM ENTER</td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">VIM_NORMAL_SYM レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;none</code></td>
+<td>pos 2<br><code>&amp;none</code></td>
+<td>pos 3<br><code>&amp;mm_vim_shift_4</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;mm_vim_shift_6</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;kp HOME</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_shift_4[0]<br>▸ &amp;none</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_shift_6[0]<br>▸ &amp;none</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp HOME</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_shift_4[1]<br>▸ &amp;kp END</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_shift_6[1]<br>▸ &amp;kp HOME</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;kp LCTRL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp LEFT</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;none</code></td>
+<td>pos 19<br><code>&amp;kp RCTRL</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp LCTRL</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp LEFT</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp RCTRL</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;kp LEFT_SHIFT</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;kp RIGHT_SHIFT</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp LEFT_SHIFT</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp RIGHT_SHIFT</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;trans</code></td>
+<td>pos 32<br><code>&amp;trans</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;trans</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>▽</td>
+<td>▽</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>▽</td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">MOUSE_MOVE レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;none</code></td>
+<td>pos 2<br><code>&amp;none</code></td>
+<td>pos 3<br><code>&amp;none</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;none</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;none</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;none</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;mo MOUSE_SCROLL</code></td>
+<td>pos 18<br><code>&amp;none</code></td>
+<td>pos 19<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;mo MOUSE_SCROLL</td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;none</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">MOUSE_SCROLL レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;none</code></td>
+<td>pos 2<br><code>&amp;none</code></td>
+<td>pos 3<br><code>&amp;none</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;none</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;none</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;none</code></td>
+<td>pos 16<br><code>&amp;mkp MB1</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;mkp MB2</code></td>
+<td>pos 19<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;mkp MB1</td>
+<td></td>
+<td>&amp;mkp MB2</td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;none</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;mkp MB4</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;mkp MB5</code></td>
+<td>pos 29<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;mkp MB4</td>
+<td></td>
+<td>&amp;mkp MB5</td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">FUNCTION レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;kp F1</code></td>
+<td>pos 1<br><code>&amp;kp F2</code></td>
+<td>pos 2<br><code>&amp;kp F3</code></td>
+<td>pos 3<br><code>&amp;kp F4</code></td>
+<td>pos 4<br><code>&amp;kp F5</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;kp F6</code></td>
+<td>pos 6<br><code>&amp;kp F7</code></td>
+<td>pos 7<br><code>&amp;kp F8</code></td>
+<td>pos 8<br><code>&amp;kp F9</code></td>
+<td>pos 9<br><code>&amp;kp F10</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp F1</td>
+<td>&amp;kp F2</td>
+<td>&amp;kp F3</td>
+<td>&amp;kp F4</td>
+<td>&amp;kp F5</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp F6</td>
+<td>&amp;kp F7</td>
+<td>&amp;kp F8</td>
+<td>&amp;kp F9</td>
+<td>&amp;kp F10</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;none</code></td>
+<td>pos 11<br><code>&amp;sys_reset</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;none</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;sys_reset</code></td>
+<td>pos 19<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>&amp;sys_reset</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;sys_reset</td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;none</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;bootloader</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;bootloader</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;bootloader</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;bootloader</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">BLUETOOTH レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;bt BT_SEL 0</code></td>
+<td>pos 1<br><code>&amp;bt BT_SEL 1</code></td>
+<td>pos 2<br><code>&amp;bt BT_SEL 2</code></td>
+<td>pos 3<br><code>&amp;bt BT_SEL 3</code></td>
+<td>pos 4<br><code>&amp;bt BT_SEL 4</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;none</code></td>
+<td>pos 6<br><code>&amp;out OUT_USB</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;bt BT_SEL 0</td>
+<td>&amp;bt BT_SEL 1</td>
+<td>&amp;bt BT_SEL 2</td>
+<td>&amp;bt BT_SEL 3</td>
+<td>&amp;bt BT_SEL 4</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;out OUT_USB</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;bt BT_CLR_ALL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;none</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;none</code></td>
+<td>pos 19<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;bt BT_CLR_ALL</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;none</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;bt BT_CLR</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;out OUT_BLE</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td>&amp;bt BT_CLR</td>
+<td></td>
+<td>&amp;out OUT_BLE</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">VIM_VISUAL_BASE レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;kp LS(LC(RIGHT))</code></td>
+<td>pos 2<br><code>&amp;kp LS(LC(RIGHT))</code></td>
+<td>pos 3<br><code>&amp;none</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;macro_vim_visual_y</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;macro_vim_visual_p</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td>&amp;kp LS(LC(RIGHT))</td>
+<td>&amp;kp LS(LC(RIGHT))</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>macro_vim_visual_y</td>
+<td></td>
+<td></td>
+<td></td>
+<td>macro_vim_visual_p</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;kp LCTRL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;macro_vim_visual_cut</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;mm_vim_visual_g</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp LS(LEFT)</code></td>
+<td>pos 16<br><code>&amp;kp LS(DOWN)</code></td>
+<td>pos 17<br><code>&amp;kp LS(UP)</code></td>
+<td>pos 18<br><code>&amp;kp LS(RIGHT)</code></td>
+<td>pos 19<br><code>&amp;kp RCTRL</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp LCTRL</td>
+<td></td>
+<td>macro_vim_visual_cut</td>
+<td></td>
+<td><span class="ml">mm_vim_visual_g[0]<br>▸ td_vim_visual_g[0]<br>▸ &amp;none</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp LS(LEFT)</td>
+<td>&amp;kp LS(DOWN)</td>
+<td>&amp;kp LS(UP)</td>
+<td>&amp;kp LS(RIGHT)</td>
+<td>&amp;kp RCTRL</td>
+</tr>
+<tr>
+<td>ダブルタップ</td>
+<td>〃</td>
+<td></td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">mm_vim_visual_g[0]<br>▸ td_vim_visual_g[1]<br>▸ &amp;kp LS(LC(HOME))</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td>〃</td>
+<td></td>
+<td>〃</td>
+<td></td>
+<td><span class="ml">mm_vim_visual_g[1]<br>▸ &amp;kp LS(LC(END))</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;kp LEFT_SHIFT</code></td>
+<td>pos 21<br><code>&amp;macro_vim_visual_cut</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;macro_vim_visual_exit</code></td>
+<td>pos 24<br><code>&amp;kp LS(LC(LEFT))</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;kp F3</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;kp RIGHT_SHIFT</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp LEFT_SHIFT</td>
+<td>macro_vim_visual_cut</td>
+<td></td>
+<td>macro_vim_visual_exit</td>
+<td>&amp;kp LS(LC(LEFT))</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp F3</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp RIGHT_SHIFT</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;mo VIM_VISUAL_SYM</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;mo VIM_VISUAL_SYM</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;mo VIM_VISUAL_SYM</td>
+<td></td>
+<td></td>
+<td>&amp;mo VIM_VISUAL_SYM</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="layer-row"><th colspan="14">VIM_VISUAL_SYM レイヤー</th></tr>
+<tr style="background-color:#fff3cd">
+<td>Row 1</td>
+<td>pos 0<br><code>&amp;none</code></td>
+<td>pos 1<br><code>&amp;none</code></td>
+<td>pos 2<br><code>&amp;none</code></td>
+<td>pos 3<br><code>&amp;mm_vim_visual_shift_4</code></td>
+<td>pos 4<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 5<br><code>&amp;mm_vim_visual_shift_6</code></td>
+<td>pos 6<br><code>&amp;none</code></td>
+<td>pos 7<br><code>&amp;none</code></td>
+<td>pos 8<br><code>&amp;none</code></td>
+<td>pos 9<br><code>&amp;kp LS(HOME)</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_visual_shift_4[0]<br>▸ &amp;none</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_visual_shift_6[0]<br>▸ &amp;none</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp LS(HOME)</td>
+</tr>
+<tr>
+<td>Shift+</td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_visual_shift_4[1]<br>▸ &amp;kp LS(END)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span class="ml">mm_vim_visual_shift_6[1]<br>▸ &amp;kp LS(HOME)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>〃</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 2</td>
+<td>pos 10<br><code>&amp;kp LCTRL</code></td>
+<td>pos 11<br><code>&amp;none</code></td>
+<td>pos 12<br><code>&amp;none</code></td>
+<td>pos 13<br><code>&amp;none</code></td>
+<td>pos 14<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 15<br><code>&amp;kp LS(LEFT)</code></td>
+<td>pos 16<br><code>&amp;none</code></td>
+<td>pos 17<br><code>&amp;none</code></td>
+<td>pos 18<br><code>&amp;none</code></td>
+<td>pos 19<br><code>&amp;kp RCTRL</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp LCTRL</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp LS(LEFT)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp RCTRL</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 3</td>
+<td>pos 20<br><code>&amp;kp LEFT_SHIFT</code></td>
+<td>pos 21<br><code>&amp;none</code></td>
+<td>pos 22<br><code>&amp;none</code></td>
+<td>pos 23<br><code>&amp;none</code></td>
+<td>pos 24<br><code>&amp;none</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td>pos 25<br><code>&amp;none</code></td>
+<td>pos 26<br><code>&amp;none</code></td>
+<td>pos 27<br><code>&amp;none</code></td>
+<td>pos 28<br><code>&amp;none</code></td>
+<td>pos 29<br><code>&amp;kp RIGHT_SHIFT</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td>&amp;kp LEFT_SHIFT</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>&amp;kp RIGHT_SHIFT</td>
+</tr>
+<tr style="background-color:#fff3cd">
+<td>Row 4</td>
+<td>pos 30<br><code>&amp;none</code></td>
+<td>pos 31<br><code>&amp;none</code></td>
+<td>pos 32<br><code>&amp;none</code></td>
+<td>pos 33<br><code>&amp;none</code></td>
+<td>pos 34<br><code>&amp;none</code></td>
+<td>pos 35<br><code>&amp;none</code></td>
+<td></td>
+<td>pos 36<br><code>&amp;none</code></td>
+<td>pos 37<br><code>&amp;none</code></td>
+<td>pos 38<br><code>&amp;none</code></td>
+<td>pos 39<br><code>&amp;none</code></td>
+<td>pos 40<br><code>&amp;none</code></td>
+<td>pos 41<br><code>&amp;none</code></td>
+</tr>
+<tr>
+<td>タップ</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
