@@ -1,136 +1,494 @@
-#define ZMK_POINTING_DEFAULT_SCRL_VAL 200
-
+#include <input/processors.dtsi>
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/outputs.h>
 #include <dt-bindings/zmk/pointing.h>
-#include <dt-bindings/zmk/mouse.h>
+
+/*
+ * AroundFortyRB のキーマップを LisM (42キー) へ移植したもの。
+ *
+ * 物理レイアウトの違い（AroundFortyRB: 10/10/11/11、LisM: 10/10/10/12）は
+ * 次のルールで吸収している:
+ *   - AroundFortyRB の 3段目内側キー（&mo BT 等）→ LisM 最下段右の最内側親指キーへ移設
+ *   - その他のキーは同じ行・同じ並びのまま
+ *
+ * レイヤー番号の別名定義。
+ *   &mo / &lt / &to などの「経路（どのレイヤーへ移動するか）」を
+ *   数字ではなく名前で書けるようにして可読性を上げる。
+ *   ※ レイヤーノード名（BASE_QWERTY 等）との衝突を避けるため別名にしている。
+ *
+ *   番号  別名        レイヤーノード      役割
+ *   ----  ----------  -----------------   ------------------------------
+ *    0    BASE        BASE_QWERTY         通常入力（QWERTY）
+ *    1    SYM         NUM_SYMBOL          数字・記号
+ *    2    VIM_BASE    VIM_NORMAL_BASE     BASE 層に対応する Vim ノーマル
+ *    3    VIM_SYM     VIM_NORMAL_SYM      SYM 層に対応する Vim ノーマル
+ *    4    MOUS        MOUSE_MOVE          マウス移動
+ *    5    SCRL        MOUSE_SCROLL        スクロール／クリック（MOUSE_MOVE の子）
+ *    6    FUNC        FUNCTION            ファンクションキー
+ *    7    BT          BLUETOOTH           Bluetooth／出力切替
+ *    8    VIM_VISUAL  VIM_VISUAL_BASE     BASE 層に対応する Vim ビジュアル
+ *    9    VIM_VIS_SYM VIM_VISUAL_SYM      SYM 層に対応する Vim ビジュアル
+ */
+#define BASE        0
+#define SYM         1
+#define VIM_BASE    2
+#define VIM_SYM     3
+#define MOUS        4
+#define SCRL        5
+#define FUNC        6
+#define BT          7
+#define VIM_VISUAL  8
+#define VIM_VIS_SYM 9
 
 &mt {
-    tapping-term-ms = <300>;
+    quick-tap-ms = <0>;
+    tapping-term-ms = <150>;
     flavor = "balanced";
 };
 
 &lt {
-    quick-tap-ms = <300>;
+    tapping-term-ms = <150>;
+    quick-tap-ms = <0>;
+    flavor = "balanced";
 };
 
+&zip_temp_layer {
+    excluded-positions = <
+        17 // K
+    >;
+
+    require-prior-idle-ms = <200>;
+};
 
 / {
+    combos { compatible = "zmk,combos"; };
+
+    /*
+     * カスタムビヘイビア命名規則
+     *   A. 構造: <prefix>_vim_<id>（prefix = macro_ / td_ / mm_）。
+     *      ノードラベル == ノード名、label = "<ラベルの大文字>" に揃える。
+     *   B. mm_ の <id>: キーに直接置くモーフは無修飾時の vim キー名で命名
+     *      （mm_vim_d / mm_vim_g など）。ベースが &none、またはネスト用
+     *      ヘルパーは「修飾+キーストローク」で命名（mm_vim_shift_4 /
+     *      mm_vim_ctrl_r / mm_vim_shift_d）。
+     */
+
     macros {
-        emoji: emoji_macro {
+        macro_vim_dd: macro_vim_dd {
             compatible = "zmk,behavior-macro";
-            label = "EMOJI";
             #binding-cells = <0>;
-            bindings = 
-                <&macro_press &kp CAPSLOCK>,
-                <&macro_tap &kp E>,
-                <&macro_release &kp CAPSLOCK>;
+            bindings =
+                <&kp HOME>,
+                <&macro_wait_time 100>,
+                <&kp LS(END)>,
+                <&macro_wait_time 100>,
+                <&kp LC(X)>;
+
+            label = "MACRO_VIM_DD";
+        };
+
+        macro_vim_yy: macro_vim_yy {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings =
+                <&kp HOME>,
+                <&macro_wait_time 100>,
+                <&kp LS(END)>,
+                <&macro_wait_time 100>,
+                <&kp LC(C)>;
+
+            label = "MACRO_VIM_YY";
+        };
+
+        macro_vim_shift_d: macro_vim_shift_d {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LS(END)>, <&macro_wait_time 100>, <&kp LC(X)>;
+
+            label = "MACRO_VIM_SHIFT_D";
+        };
+
+        macro_vim_shift_y: macro_vim_shift_y {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LS(END)>, <&macro_wait_time 100>, <&kp LC(C)>;
+
+            label = "MACRO_VIM_SHIFT_Y";
+        };
+
+        macro_vim_o: macro_vim_o {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp END>, <&macro_wait_time 100>, <&kp ENTER>;
+
+            label = "MACRO_VIM_O";
+        };
+
+        macro_vim_shift_o: macro_vim_shift_o {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings =
+                <&kp HOME>,
+                <&macro_wait_time 100>,
+                <&kp ENTER>,
+                <&macro_wait_time 100>,
+                <&kp UP_ARROW>;
+
+            label = "MACRO_VIM_SHIFT_O";
+        };
+
+        macro_vim_join: macro_vim_join {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings =
+                <&kp END>,
+                <&macro_wait_time 100>,
+                <&kp DELETE>,
+                <&macro_wait_time 100>,
+                <&kp SPACE>;
+
+            label = "MACRO_VIM_JOIN";
+        };
+
+        macro_vim_visual_y: macro_vim_visual_y {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings =
+                <&macro_release>,
+                <&kp LSHIFT &kp RSHIFT>,
+                <&macro_tap>,
+                <&kp LC(C)>,
+                <&macro_wait_time 50>,
+                <&kp RIGHT>,
+                <&macro_wait_time 50>,
+                <&to BASE>;
+
+            label = "MACRO_VIM_VISUAL_Y";
+        };
+
+        macro_vim_visual_cut: macro_vim_visual_cut {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings =
+                <&macro_release>,
+                <&kp LSHIFT &kp RSHIFT>,
+                <&macro_tap>,
+                <&kp LC(X)>,
+                <&macro_wait_time 50>,
+                <&to BASE>;
+
+            label = "MACRO_VIM_VISUAL_CUT";
+        };
+
+        macro_vim_visual_p: macro_vim_visual_p {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings =
+                <&macro_release>,
+                <&kp LSHIFT &kp RSHIFT>,
+                <&macro_tap>,
+                <&kp LC(V)>,
+                <&macro_wait_time 50>,
+                <&to BASE>;
+
+            label = "MACRO_VIM_VISUAL_P";
+        };
+
+        macro_vim_v_line: macro_vim_v_line {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings =
+                <&kp HOME>,
+                <&macro_wait_time 50>,
+                <&kp LS(DOWN)>,
+                <&macro_wait_time 50>,
+                <&to VIM_VISUAL>;
+
+            label = "MACRO_VIM_V_LINE";
+        };
+
+        macro_vim_visual_exit: macro_vim_visual_exit {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings =
+                <&macro_release>,
+                <&kp LSHIFT &kp RSHIFT>,
+                <&macro_tap>,
+                <&kp RIGHT>,
+                <&macro_wait_time 50>,
+                <&to BASE>;
+
+            label = "MACRO_VIM_VISUAL_EXIT";
         };
     };
 
     behaviors {
-        encoder_msc: sensor_rotate_msc {
-            compatible = "zmk,behavior-sensor-rotate-var";
-            #sensor-binding-cells = <2>;
-            bindings = <&msc>, <&msc>;
-            tap-ms = <20>;
+        td_vim_d: td_vim_d {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_VIM_D";
+            #binding-cells = <0>;
+            bindings = <&none>, <&macro_vim_dd>;
         };
 
-        encoder_kp: sensor_rotate_kp {
-            compatible = "zmk,behavior-sensor-rotate-var";
-            #sensor-binding-cells = <2>;
-            bindings = <&kp>, <&kp>;
+        mm_vim_shift_d: mm_vim_shift_d {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_SHIFT_D";
+            bindings = <&td_vim_d>, <&macro_vim_shift_d>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        td_vim_y: td_vim_y {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_VIM_Y";
+            #binding-cells = <0>;
+            bindings = <&none>, <&macro_vim_yy>;
+        };
+
+        mm_vim_y: mm_vim_y {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_Y";
+            bindings = <&td_vim_y>, <&macro_vim_shift_y>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_u: mm_vim_u {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_U";
+            bindings = <&kp LC(Z)>, <&kp PAGE_UP>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LCTL|MOD_RCTL)>;
+        };
+
+        mm_vim_o: mm_vim_o {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_O";
+            bindings = <&macro_vim_o>, <&macro_vim_shift_o>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_d: mm_vim_d {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_D";
+            bindings = <&mm_vim_shift_d>, <&kp PAGE_DOWN>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LCTL|MOD_RCTL)>;
+        };
+
+        mm_vim_shift_4: mm_vim_shift_4 {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_SHIFT_4";
+            bindings = <&none>, <&kp END>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_ctrl_r: mm_vim_ctrl_r {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_CTRL_R";
+            bindings = <&none>, <&kp LC(Y)>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LCTL|MOD_RCTL)>;
+        };
+
+        td_vim_g: td_vim_g {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_VIM_G";
+            #binding-cells = <0>;
+            bindings = <&none>, <&kp LC(HOME)>;
+        };
+
+        mm_vim_g: mm_vim_g {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_G";
+            bindings = <&td_vim_g>, <&kp LC(END)>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_j: mm_vim_j {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_J";
+            bindings = <&kp DOWN>, <&macro_vim_join>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_shift_6: mm_vim_shift_6 {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_SHIFT_6";
+            bindings = <&none>, <&kp HOME>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_v: mm_vim_v {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_V";
+            bindings = <&to VIM_VISUAL>, <&macro_vim_v_line>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        td_vim_visual_g: td_vim_visual_g {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_VIM_VISUAL_G";
+            #binding-cells = <0>;
+            bindings = <&none>, <&kp LS(LC(HOME))>;
+        };
+
+        mm_vim_visual_g: mm_vim_visual_g {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_VISUAL_G";
+            bindings = <&td_vim_visual_g>, <&kp LS(LC(END))>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_visual_shift_4: mm_vim_visual_shift_4 {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_VISUAL_SHIFT_4";
+            bindings = <&none>, <&kp LS(END)>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_visual_shift_6: mm_vim_visual_shift_6 {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_VISUAL_SHIFT_6";
+            bindings = <&none>, <&kp LS(HOME)>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_n: mm_vim_n {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_N";
+            bindings = <&kp F3>, <&kp LS(F3)>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_vim_w: mm_vim_w {
+            compatible = "zmk,behavior-mod-morph";
+            label = "MM_VIM_W";
+            bindings = <&kp LC(RIGHT)>, <&kp LC(BACKSPACE)>;
+
+            #binding-cells = <0>;
+            mods = <(MOD_LCTL|MOD_RCTL)>;
         };
     };
 
     keymap {
         compatible = "zmk,keymap";
 
-        default_layer {
-            display-name = "Default Layer";
+        BASE_QWERTY {
             bindings = <
-                &kp Q            &kp W              &kp E                 &kp R                   &kp T                                                  &kp Y        &kp U            &kp I              &kp O               &kp P
-                &kp A            &mt LALT S         &mt LSHIFT D          &mt LGUI F              &mt LCTRL G                                            &mt RCTRL H  &mt RGUI J       &mt RSHIFT K       &mt RALT L          &lt 3 SEMICOLON
-                &kp Z            &kp X              &kp C                 &kp V                   &kp B                                                  &kp N        &kp M            &kp COMMA          &kp DOT             &kp SLASH
-                &lt 4 DELETE     &tog 1             &lt 1 TAB             &kp LS(LG(N4))          &lt 2 SPACE       &lt 3 ESC           &lt 3 BACKSPACE  &lt 2 ENTER  &kp LS(LG(N4))   &kp F7             &kp F10             &lt 4 F12 
-            >;
-            sensor-bindings = <&encoder_msc SCRL_DOWN SCRL_UP>;
-        };
-
-        layer_1 {
-            display-name = "Mouse Layer";
-            bindings = <
-                &trans           &trans             &trans                &trans                  &trans                                                 &kp SPACE    &kp RG(LEFT)     &kp RG(RIGHT)      &mkp MB3            &trans
-                &mkp MB5         &trans             &trans                &trans                  &trans                                                 &kp LG(UP)   &mkp MB1         &mkp MB2           &msc SCRL_UP        &msc SCRL_DOWN
-                &mkp MB4         &trans             &trans                &trans                  &trans                                                 &kp LG(DOWN) &kp LEFT         &kp UP             &kp RIGHT           &trans
-                &trans           &trans             &trans                &trans                  &trans            &trans              &trans           &trans       &trans           &kp DOWN           &trans              &kp LG(W)
+&kp Q               &kp W         &kp E         &kp R               &kp T                                  &kp Y          &kp U   &kp I         &kp O       &kp P
+&mt LEFT_CONTROL A  &kp S         &kp D         &kp F               &kp G                                  &kp H          &kp J   &kp K         &kp L       &mt RCTRL MINUS
+&mt LEFT_SHIFT Z    &kp X         &kp C         &kp V               &kp B                                  &kp N          &kp M   &kp COMMA     &kp PERIOD  &mt RIGHT_SHIFT SLASH
+&mo FUNC            &kp LEFT_WIN  &kp LEFT_ALT  &lt VIM_BASE SPACE  &lt VIM_BASE SPACE  &mo SYM   &mo BT   &lt SYM ENTER  &mo BT  &mo VIM_BASE  &mo FUNC    &mo FUNC
             >;
         };
 
-        layer_2 {
-            display-name = "Number Layer";
+        NUM_SYMBOL {
             bindings = <
-                &trans           &kp NUMBER_7       &kp NUMBER_8          &kp NUMBER_9            &kp EQUAL                                              &kp F1       &kp F2           &kp F7             &kp F10             &kp RSHIFT
-                &kp ASTERISK     &mt LALT NUMBER_4  &mt LSHIFT NUMBER_5   &mt LGUI NUMBER_6       &mt LCTRL MINUS                                        &mkp MB1     &kp LEFT         &kp UP             &kp RIGHT           &kp RGUI
-                &kp SLASH        &kp NUMBER_1       &kp NUMBER_2          &kp NUMBER_3            &kp PLUS                                               &mkp MB2     &none            &kp DOWN           &none               &kp RALT
-                &trans           &kp DOT            &kp NUMBER_0          &trans                  &kp LANG2         &trans              &trans           &kp LANG1    &trans           &kp RS(RC(TAB))    &kp RC(TAB)         &kp F12 
-            >;
-            sensor-bindings = <&encoder_kp C_VOL_UP C_VOL_DN>;
-        };
-
-        layer_3 {
-            display-name = "Mark Layer";
-            bindings = <
-                &kp LS(LG(N4))   &kp F4             &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS   &none                                                  &kp TILDE    &kp EXCLAMATION  &kp AT_SIGN        &kp HASH            &kp DOLLAR
-                &emoji           &kp F5             &kp LEFT_BRACKET      &kp RIGHT_BRACKET       &none                                                  &kp GRAVE    &kp UNDER        &kp SINGLE_QUOTE   &kp DOUBLE_QUOTES   &kp BACKSLASH
-                &kp KP_NUMLOCK   &kp F11            &kp LEFT_BRACE        &kp RIGHT_BRACE         &none                                                  &kp PIPE     &kp PERCENT      &kp CARET          &kp AMPERSAND       &kp ASTERISK
-                &trans           &trans             &kp NUMBER_0          &trans                  &kp SPACE         &trans              &trans           &kp ENTER    &trans           &none              &none               &kp F12 
+&kp N1                 &kp N2     &kp N3            &kp N4             &kp N5                            &kp N6         &kp N7         &kp N8            &kp N9         &kp N0
+&mt LCTRL TAB          &kp GRAVE  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp DELETE                        &kp BACKSPACE  &kp SEMICOLON  &kp SINGLE_QUOTE  &kp BACKSLASH  &trans
+&mt LEFT_SHIFT ESCAPE  &none      &none             &none              &none                             &none          &kp EQUAL      &trans            &trans         &trans
+&none                  &trans     &trans            &lt VIM_SYM SPACE  &lt VIM_SYM SPACE  &none   &none   &none          &none          &mo VIM_SYM       &trans         &none
             >;
         };
 
-        layer_4 {
-            display-name = "Device Layer";
+        VIM_NORMAL_BASE {
             bindings = <
-                &none            &none              &none                 &none                   &bt BT_CLR                                             &bt BT_SEL 0 &bt BT_SEL 1     &bt BT_SEL 2       &bt BT_SEL 3        &bt BT_SEL 4
-                &none            &none              &none                 &none                   &none                                                  &none        &none            &none              &none               &none
-                &sys_reset       &none              &none                 &none                   &none                                                  &none        &none            &none              &none               &sys_reset
-                &bootloader      &bt BT_CLR_ALL     &none                 &none                   &none             &none               &studio_unlock   &none        &none            &none              &none               &bootloader
+&none           &mm_vim_w   &kp LC(RIGHT)  &mm_vim_ctrl_r  &none                               &mm_vim_y          &mm_vim_u  &none         &mm_vim_o  &kp LC(V)
+&kp LCTRL       &none       &mm_vim_d      &none           &mm_vim_g                           &kp LEFT           &mm_vim_j  &kp UP_ARROW  &kp RIGHT  &kp RCTRL
+&kp LEFT_SHIFT  &kp DELETE  &none          &mm_vim_v       &kp LC(LEFT)                        &mm_vim_n          &none      &none         &none      &kp RIGHT_SHIFT
+&none           &trans      &trans         &none           &none         &mo VIM_SYM   &none   &lt VIM_SYM ENTER  &none      &none         &trans     &none
             >;
         };
 
-        layer_5 {
-            status = "reserved";
-            display-name = "Brank Layer";
+        VIM_NORMAL_SYM {
             bindings = <
-                &trans           &trans             &trans                &trans                  &trans                                                 &trans       &trans           &trans             &trans              &trans
-                &trans           &trans             &trans                &trans                  &trans                                                 &trans       &trans           &trans             &trans              &trans
-                &trans           &trans             &trans                &trans                  &trans                                                 &trans       &trans           &trans             &trans              &trans
-                &trans           &trans             &trans                &trans                  &trans            &trans              &trans           &trans       &trans           &trans             &trans              &trans
+&none           &none   &none   &mm_vim_shift_4  &none                   &mm_vim_shift_6  &none  &none  &none   &kp HOME
+&kp LCTRL       &none   &none   &none            &none                   &kp LEFT         &none  &none  &none   &kp RCTRL
+&kp LEFT_SHIFT  &none   &none   &none            &none                   &none            &none  &none  &none   &kp RIGHT_SHIFT
+&none           &trans  &trans  &none            &none   &none   &none   &none            &none  &none  &trans  &none
             >;
         };
 
-        layer_6 {
-            status = "reserved";
-            display-name = "Brank Layer";
+        MOUSE_MOVE {
             bindings = <
-                &trans           &trans             &trans                &trans                  &trans                                                 &trans       &trans           &trans             &trans              &trans
-                &trans           &trans             &trans                &trans                  &trans                                                 &trans       &trans           &trans             &trans              &trans
-                &trans           &trans             &trans                &trans                  &trans                                                 &trans       &trans           &trans             &trans              &trans
-                &trans           &trans             &trans                &trans                  &trans            &trans              &trans           &trans       &trans           &trans             &trans              &trans
+&none  &none  &none  &none  &none                 &none  &none  &none     &none  &none
+&none  &none  &none  &none  &none                 &none  &none  &mo SCRL  &none  &none
+&none  &none  &none  &none  &none                 &none  &none  &none     &none  &none
+&none  &none  &none  &none  &none  &none   &none  &none  &none  &none     &none  &none
             >;
         };
 
-        layer_7 {
-            status = "reserved";
-            display-name = "Brank Layer";
+        MOUSE_SCROLL {
             bindings = <
-                &trans           &trans             &trans                &trans                  &trans                                                 &trans       &trans           &trans             &trans              &trans
-                &trans           &trans             &trans                &trans                  &trans                                                 &trans       &trans           &trans             &trans              &trans
-                &trans           &trans             &trans                &trans                  &trans                                                 &trans       &trans           &trans             &trans              &trans
-                &trans           &trans             &trans                &trans                  &trans            &trans              &trans           &trans       &trans           &trans             &trans              &trans
+&none  &none  &none  &none  &none                 &none  &none     &none  &none     &none
+&none  &none  &none  &none  &none                 &none  &mkp MB1  &none  &mkp MB2  &none
+&none  &none  &none  &none  &none                 &none  &mkp MB4  &none  &mkp MB5  &none
+&none  &none  &none  &none  &none  &none   &none  &none  &none     &none  &none     &none
+            >;
+        };
+
+        FUNCTION {
+            bindings = <
+&kp F1  &kp F2      &kp F3  &kp F4  &kp F5                       &kp F6       &kp F7  &kp F8  &kp F9      &kp F10
+&none   &sys_reset  &none   &none   &none                        &none        &none   &none   &sys_reset  &none
+&none   &none       &none   &none   &bootloader                  &bootloader  &none   &none   &none       &none
+&none   &none       &none   &none   &none        &none   &none   &none        &none   &none   &none       &none
+            >;
+        };
+
+        BLUETOOTH {
+            bindings = <
+&bt BT_SEL 0    &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4                  &none  &out OUT_USB  &none  &none  &none
+&bt BT_CLR_ALL  &none         &none         &none         &none                         &none  &none         &none  &none  &none
+&none           &none         &bt BT_CLR    &none         &out OUT_BLE                  &none  &none         &none  &none  &none
+&none           &none         &none         &none         &none         &none   &none   &none  &none         &none  &none  &none
+            >;
+        };
+
+        VIM_VISUAL_BASE {
+            bindings = <
+&none           &kp LS(LC(RIGHT))      &kp LS(LC(RIGHT))      &none                   &none                                       &macro_vim_visual_y  &none         &none       &none          &macro_vim_visual_p
+&kp LCTRL       &none                  &macro_vim_visual_cut  &none                   &mm_vim_visual_g                            &kp LS(LEFT)         &kp LS(DOWN)  &kp LS(UP)  &kp LS(RIGHT)  &kp RCTRL
+&kp LEFT_SHIFT  &macro_vim_visual_cut  &none                  &macro_vim_visual_exit  &kp LS(LC(LEFT))                            &kp F3               &none         &none       &none          &kp RIGHT_SHIFT
+&none           &none                  &none                  &none                   &none             &mo VIM_VIS_SYM   &none   &mo VIM_VIS_SYM      &none         &none       &none          &none
+            >;
+        };
+
+        VIM_VISUAL_SYM {
+            bindings = <
+&none           &none  &none  &mm_vim_visual_shift_4  &none                  &mm_vim_visual_shift_6  &none  &none  &none  &kp LS(HOME)
+&kp LCTRL       &none  &none  &none                   &none                  &kp LS(LEFT)            &none  &none  &none  &kp RCTRL
+&kp LEFT_SHIFT  &none  &none  &none                   &none                  &none                   &none  &none  &none  &kp RIGHT_SHIFT
+&none           &none  &none  &none                   &none  &none   &none   &none                   &none  &none  &none  &none
             >;
         };
     };
-
 };
