@@ -406,7 +406,7 @@
 &kp Q               &kp W         &kp E         &kp R               &kp T                                  &kp Y          &kp U   &kp I         &kp O       &kp P
 &mt LEFT_CONTROL A  &kp S         &kp D         &kp F               &kp G                                  &kp H          &kp J   &kp K         &kp L       &mt RCTRL MINUS
 &mt LEFT_SHIFT Z    &kp X         &kp C         &kp V               &kp B                                  &kp N          &kp M   &kp COMMA     &kp PERIOD  &mt RIGHT_SHIFT SLASH
-&mo FUNC            &kp LEFT_WIN  &kp LEFT_ALT  &lt VIM_BASE SPACE  &lt VIM_BASE SPACE  &mo SYM   &mo BT   &lt SYM ENTER  &mo BT  &mo VIM_BASE  &mo FUNC    &mo FUNC
+&mo FUNC            &kp LEFT_WIN  &kp LEFT_ALT  &none               &lt VIM_BASE SPACE  &mo SYM   &mo VIM_BASE   &lt SYM ENTER  &none   &mo BT        &mo FUNC    &mo FUNC
             >;
         };
 
@@ -415,7 +415,7 @@
 &kp N1                 &kp N2     &kp N3            &kp N4             &kp N5                            &kp N6         &kp N7         &kp N8            &kp N9         &kp N0
 &mt LCTRL TAB          &kp GRAVE  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp DELETE                        &kp BACKSPACE  &kp SEMICOLON  &kp SINGLE_QUOTE  &kp BACKSLASH  &trans
 &mt LEFT_SHIFT ESCAPE  &none      &none             &none              &none                             &none          &kp EQUAL      &trans            &trans         &trans
-&none                  &trans     &trans            &lt VIM_SYM SPACE  &lt VIM_SYM SPACE  &none   &none   &none          &none          &mo VIM_SYM       &trans         &none
+&none                  &trans     &trans            &none              &lt VIM_SYM SPACE  &none   &mo VIM_SYM   &none    &none             &none          &trans         &none
             >;
         };
 
