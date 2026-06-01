@@ -1,6 +1,17 @@
 #include "../non_trackball.overlay"
 
 // split経由のリスナーを有効化
+// （反対側半身にトラックボールがある場合に対応。
+//   XY反転はペリフェラル側 trackball_split で適用済み）
 &peripheral_listener {
     status = "okay";
+    input-processors =
+        <&zip_temp_layer 4 10000>;  // 4 = MOUS（マウス移動レイヤーを自動有効化）
+
+    scroller {
+        layers = <5>;               // 5 = SCRL（スクロールレイヤー）
+        input-processors =
+            <&zip_xy_to_scroll_mapper>,
+            <&zip_scroll_scaler 1 16>;
+    };
 };

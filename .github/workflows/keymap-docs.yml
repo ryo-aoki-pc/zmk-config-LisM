@@ -1,0 +1,46 @@
+name: Update KEYMAP docs
+
+on:
+  push:
+    paths:
+      - 'config/lism.keymap'
+      - 'tools/keymap-docgen'
+      - '.gitmodules'
+      - '.github/workflows/keymap-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-keymap-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install openpyxl
+
+      - name: Regenerate KEYMAP docs
+        run: python tools/keymap-docgen/keymap_docgen.py config/lism.keymap -o KEYMAP.xlsx
+
+      - name: Commit KEYMAP docs if changed
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add KEYMAP.html KEYMAP.xlsx
+          if git diff --cached --quiet; then
+            echo "KEYMAP docs are up to date."
+          else
+            git commit -m "docs: regenerate KEYMAP.html and KEYMAP.xlsx from keymap"
+            git push origin HEAD:${GITHUB_REF#refs/heads/}
+          fi
