@@ -31,6 +31,7 @@
  *    8    VIM_VISUAL  VIM_VISUAL_BASE     BASE 層に対応する Vim ビジュアル
  *    9    VIM_VIS_SYM VIM_VISUAL_SYM      SYM 層に対応する Vim ビジュアル
  */
+
 #define BASE        0
 #define SYM         1
 #define VIM_BASE    2
@@ -403,19 +404,19 @@
 
         BASE_QWERTY {
             bindings = <
-&kp Q               &kp W         &kp E         &kp R               &kp T                                  &kp Y          &kp U   &kp I         &kp O       &kp P
-&mt LEFT_CONTROL A  &kp S         &kp D         &kp F               &kp G                                  &kp H          &kp J   &kp K         &kp L       &mt RCTRL MINUS
-&mt LEFT_SHIFT Z    &kp X         &kp C         &kp V               &kp B                                  &kp N          &kp M   &kp COMMA     &kp PERIOD  &mt RIGHT_SHIFT SLASH
-&mo FUNC            &kp LEFT_WIN  &kp LEFT_ALT  &none               &lt VIM_BASE SPACE  &mo SYM   &mo VIM_BASE   &lt SYM ENTER  &none   &mo BT        &mo FUNC    &mo FUNC
+&kp Q               &kp W         &kp E         &kp R  &kp T                                        &kp Y          &kp U  &kp I      &kp O       &kp P
+&mt LEFT_CONTROL A  &kp S         &kp D         &kp F  &kp G                                        &kp H          &kp J  &kp K      &kp L       &mt RCTRL MINUS
+&mt LEFT_SHIFT Z    &kp X         &kp C         &kp V  &kp B                                        &kp N          &kp M  &kp COMMA  &kp PERIOD  &mt RIGHT_SHIFT SLASH
+&mo FUNC            &kp LEFT_WIN  &kp LEFT_ALT  &none  &lt VIM_BASE SPACE  &mo SYM    &mo VIM_BASE  &lt SYM ENTER  &none  &mo BT     &mo FUNC    &mo FUNC
             >;
         };
 
         NUM_SYMBOL {
             bindings = <
-&kp N1                 &kp N2     &kp N3            &kp N4             &kp N5                            &kp N6         &kp N7         &kp N8            &kp N9         &kp N0
-&mt LCTRL TAB          &kp GRAVE  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp DELETE                        &kp BACKSPACE  &kp SEMICOLON  &kp SINGLE_QUOTE  &kp BACKSLASH  &trans
-&mt LEFT_SHIFT ESCAPE  &none      &none             &none              &none                             &none          &kp EQUAL      &trans            &trans         &trans
-&none                  &trans     &trans            &none              &lt VIM_SYM SPACE  &none   &mo VIM_SYM   &none    &none             &none          &trans         &none
+&kp N1                 &kp N2     &kp N3            &kp N4             &kp N5                                   &kp N6         &kp N7         &kp N8            &kp N9         &kp N0
+&mt LCTRL TAB          &kp GRAVE  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp DELETE                               &kp BACKSPACE  &kp SEMICOLON  &kp SINGLE_QUOTE  &kp BACKSLASH  &trans
+&mt LEFT_SHIFT ESCAPE  &none      &none             &none              &none                                    &none          &kp EQUAL      &trans            &trans         &trans
+&none                  &trans     &trans            &none              &lt VIM_SYM SPACE  &none    &mo VIM_SYM  &none          &none          &none             &none          &none
             >;
         };
 
@@ -424,34 +425,34 @@
 &none           &mm_vim_w   &kp LC(RIGHT)  &mm_vim_ctrl_r  &none                               &mm_vim_y          &mm_vim_u  &none         &mm_vim_o  &kp LC(V)
 &kp LCTRL       &none       &mm_vim_d      &none           &mm_vim_g                           &kp LEFT           &mm_vim_j  &kp UP_ARROW  &kp RIGHT  &kp RCTRL
 &kp LEFT_SHIFT  &kp DELETE  &none          &mm_vim_v       &kp LC(LEFT)                        &mm_vim_n          &none      &none         &none      &kp RIGHT_SHIFT
-&none           &trans      &trans         &none           &none         &mo VIM_SYM   &none   &lt VIM_SYM ENTER  &none      &none         &trans     &none
+&none           &trans      &trans         &none           &none         &mo VIM_SYM    &none  &lt VIM_SYM ENTER  &none      &none         &none      &none
             >;
         };
 
         VIM_NORMAL_SYM {
             bindings = <
-&none           &none   &none   &mm_vim_shift_4  &none                   &mm_vim_shift_6  &none  &none  &none   &kp HOME
-&kp LCTRL       &none   &none   &none            &none                   &kp LEFT         &none  &none  &none   &kp RCTRL
-&kp LEFT_SHIFT  &none   &none   &none            &none                   &none            &none  &none  &none   &kp RIGHT_SHIFT
-&none           &trans  &trans  &none            &none   &none   &none   &none            &none  &none  &trans  &none
+&none           &none   &none   &mm_vim_shift_4  &none                  &mm_vim_shift_6  &none  &none  &none  &kp HOME
+&kp LCTRL       &none   &none   &none            &none                  &kp LEFT         &none  &none  &none  &kp RCTRL
+&kp LEFT_SHIFT  &none   &none   &none            &none                  &none            &none  &none  &none  &kp RIGHT_SHIFT
+&none           &trans  &trans  &none            &none  &none    &none  &none            &none  &none  &none  &none
             >;
         };
 
         MOUSE_MOVE {
             bindings = <
-&none  &none  &none  &none  &none                 &none  &none  &none     &none  &none
-&none  &none  &none  &none  &none                 &none  &none  &mo SCRL  &none  &none
-&none  &none  &none  &none  &none                 &none  &none  &none     &none  &none
-&none  &none  &none  &none  &none  &none   &none  &none  &none  &none     &none  &none
+&none  &none  &none  &none  &none                  &none  &none  &none     &none  &none
+&none  &none  &none  &none  &none                  &none  &none  &mo SCRL  &none  &none
+&none  &none  &none  &none  &none                  &none  &none  &none     &none  &none
+&none  &none  &none  &none  &none  &none    &none  &none  &none  &none     &none  &none
             >;
         };
 
         MOUSE_SCROLL {
             bindings = <
-&none  &none  &none  &none  &none                 &none  &none     &none  &none     &none
-&none  &none  &none  &none  &none                 &none  &mkp MB1  &none  &mkp MB2  &none
-&none  &none  &none  &none  &none                 &none  &mkp MB4  &none  &mkp MB5  &none
-&none  &none  &none  &none  &none  &none   &none  &none  &none     &none  &none     &none
+&none  &none  &none  &none  &none                  &none  &none     &none  &none     &none
+&none  &none  &none  &none  &none                  &none  &mkp MB1  &none  &mkp MB2  &none
+&none  &none  &none  &none  &none                  &none  &mkp MB4  &none  &mkp MB5  &none
+&none  &none  &none  &none  &none  &none    &none  &none  &none     &none  &none     &none
             >;
         };
 
@@ -460,7 +461,7 @@
 &kp F1  &kp F2      &kp F3  &kp F4  &kp F5                       &kp F6       &kp F7  &kp F8  &kp F9      &kp F10
 &none   &sys_reset  &none   &none   &none                        &none        &none   &none   &sys_reset  &none
 &none   &none       &none   &none   &bootloader                  &bootloader  &none   &none   &none       &none
-&none   &none       &none   &none   &none        &none   &none   &none        &none   &none   &none       &none
+&none   &none       &none   &none   &none        &none    &none  &none        &none   &none   &none       &none
             >;
         };
 
@@ -469,7 +470,7 @@
 &bt BT_SEL 0    &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4                  &none  &out OUT_USB  &none  &none  &none
 &bt BT_CLR_ALL  &none         &none         &none         &none                         &none  &none         &none  &none  &none
 &none           &none         &bt BT_CLR    &none         &out OUT_BLE                  &none  &none         &none  &none  &none
-&none           &none         &none         &none         &none         &none   &none   &none  &none         &none  &none  &none
+&none           &none         &none         &none         &none         &none    &none  &none  &none         &none  &none  &none
             >;
         };
 
@@ -478,7 +479,7 @@
 &none           &kp LS(LC(RIGHT))      &kp LS(LC(RIGHT))      &none                   &none                                       &macro_vim_visual_y  &none         &none       &none          &macro_vim_visual_p
 &kp LCTRL       &none                  &macro_vim_visual_cut  &none                   &mm_vim_visual_g                            &kp LS(LEFT)         &kp LS(DOWN)  &kp LS(UP)  &kp LS(RIGHT)  &kp RCTRL
 &kp LEFT_SHIFT  &macro_vim_visual_cut  &none                  &macro_vim_visual_exit  &kp LS(LC(LEFT))                            &kp F3               &none         &none       &none          &kp RIGHT_SHIFT
-&none           &none                  &none                  &none                   &none             &mo VIM_VIS_SYM   &none   &mo VIM_VIS_SYM      &none         &none       &none          &none
+&none           &none                  &none                  &none                   &none             &mo VIM_VIS_SYM    &none  &mo VIM_VIS_SYM      &none         &none       &none          &none
             >;
         };
 
@@ -487,7 +488,7 @@
 &none           &none  &none  &mm_vim_visual_shift_4  &none                  &mm_vim_visual_shift_6  &none  &none  &none  &kp LS(HOME)
 &kp LCTRL       &none  &none  &none                   &none                  &kp LS(LEFT)            &none  &none  &none  &kp RCTRL
 &kp LEFT_SHIFT  &none  &none  &none                   &none                  &none                   &none  &none  &none  &kp RIGHT_SHIFT
-&none           &none  &none  &none                   &none  &none   &none   &none                   &none  &none  &none  &none
+&none           &none  &none  &none                   &none  &none    &none  &none                   &none  &none  &none  &none
             >;
         };
     };
