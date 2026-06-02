@@ -15,10 +15,10 @@
 &peripheral_listener {
     status = "okay";
     input-processors =
-        <&zip_temp_layer 4 10000>;  // 4 = MOUS（マウス移動レイヤーを自動有効化）
+        <&zip_temp_layer 8 10000>;  // 8 = MOUS（マウス移動レイヤーを自動有効化）
 
     scroller {
-        layers = <5>;               // 5 = SCRL（スクロールレイヤー）
+        layers = <9>;               // 9 = SCRL（スクロールレイヤー）
         input-processors =
             <&zip_xy_to_scroll_mapper>,
             <&zip_scroll_scaler 1 16>;
@@ -31,10 +31,10 @@
     device = <&trackball_central>;
     input-processors =
         <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>,
-        <&zip_temp_layer 4 10000>;  // 4 = MOUS（マウス移動レイヤーを自動有効化）
+        <&zip_temp_layer 8 10000>;  // 8 = MOUS（マウス移動レイヤーを自動有効化）
 
     scroller {
-        layers = <5>;               // 5 = SCRL（スクロールレイヤー）
+        layers = <9>;               // 9 = SCRL（スクロールレイヤー）
         input-processors =
             <&zip_xy_to_scroll_mapper>,
             <&zip_scroll_scaler 1 16>;
