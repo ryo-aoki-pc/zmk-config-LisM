@@ -92,6 +92,33 @@
   /* Extra-op figures (Tap Dance / Mod Morph): keys without a distinct assignment. */
   .key.dim { background: #fafbfc; border-style: dashed; border-color: #d8dde2; opacity: .4; box-shadow: none; }
   .key.dim .kl { color: #b1b8be; }
+  /* Layout-figure table: one row per layer; the layer's main figure and its
+     Tap Dance / Mod Morph figures all share the single right-hand cell. */
+  table.figures { width: auto; }
+  table.figures th.fig-layer {
+    white-space: nowrap;
+    vertical-align: middle;
+    font-family: -apple-system, "Segoe UI", "Noto Sans JP", Meiryo, sans-serif;
+    font-size: 13px;
+    background: #f6f8fa;
+    padding: 8px 12px;
+  }
+  table.figures td.fig-cell {
+    text-align: left;
+    white-space: normal;
+    padding: 10px 14px;
+    font-family: -apple-system, "Segoe UI", "Noto Sans JP", Meiryo, sans-serif;
+  }
+  /* Header cells of the figure table must not stick over the figures. */
+  table.figures thead th { position: static; }
+  table.figures .kb { margin: 6px 0; }
+  /* Caption above each Tap Dance / Mod Morph figure inside a layer's cell. */
+  .fig-caption {
+    font-weight: 600;
+    font-size: 13px;
+    color: #57606a;
+    margin: 14px 0 0;
+  }
 </style>
 </head>
 <body>
@@ -103,8 +130,18 @@
 <li>各表の左端 1 列が「操作」（タップ / ホールド / ダブルタップ / Shift+ / Ctrl+）または「Row N」見出し。</li>
 </ul>
 <h2>レイアウト図</h2>
-<p>各レイヤーを実機の物理配列どおりに配置。各キーは「ラベル / タップ動作 / (ホールド動作)」を表示し、全操作（ダブルタップ / Shift+ / Ctrl+ など）はマウスオーバーのツールチップで確認できる。Tap Dance / Mod Morph の割り当てがあるレイヤーには、その操作専用の図を追加表示する（割り当てのないキーは薄い枠のみ）。</p>
-<h3>BASE_QWERTY レイヤー</h3>
+<p>各レイヤーを実機の物理配列どおりに配置した図を 1 つの表にまとめる。表の各行が 1 レイヤーで、左列がレイヤー名、右のセルがそのレイヤーの図。各キーは「ラベル / タップ動作 / (ホールド動作)」を表示し、全操作（ダブルタップ / Shift+ / Ctrl+ など）はマウスオーバーのツールチップで確認できる。Tap Dance / Mod Morph の割り当てがあるレイヤーには、その操作専用の図を同じセル内に追加表示する（割り当てのないキーは薄い枠のみ）。</p>
+<table class="figures">
+<thead>
+<tr>
+<th>レイヤー</th>
+<th>レイアウト図</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th class="fig-layer">BASE_QWERTY</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key" style="left:0px;top:0px;width:48px;height:48px" title="タップ: Q&#10;ホールド: Q&#10;ダブルタップ: Q×2&#10;Shift+: ⇧Q&#10;Ctrl+: ⌃Q&#10;&amp;kp Q"><span class="kt">Q</span></div>
 <div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: W&#10;ホールド: W&#10;ダブルタップ: W×2&#10;Shift+: ⇧W&#10;Ctrl+: ⌃W&#10;&amp;kp W"><span class="kt">W</span></div>
@@ -149,7 +186,11 @@
 <div class="key" style="left:572px;top:156px;width:48px;height:48px" title="タップ: L6&#10;ホールド: L6&#10;ダブルタップ: L6&#10;Shift+: L6&#10;Ctrl+: L6&#10;&amp;mo FUNCTION"><span class="kt">L6</span></div>
 <div class="key" style="left:624px;top:156px;width:48px;height:48px" title="タップ: L6&#10;ホールド: L6&#10;ダブルタップ: L6&#10;Shift+: L6&#10;Ctrl+: L6&#10;&amp;mo FUNCTION"><span class="kt">L6</span></div>
 </div>
-<h3>NUM_SYMBOL レイヤー</h3>
+</td>
+</tr>
+<tr>
+<th class="fig-layer">NUM_SYMBOL</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key" style="left:0px;top:0px;width:48px;height:48px" title="タップ: 1&#10;ホールド: 1&#10;ダブルタップ: 1×2&#10;Shift+: ⇧1&#10;Ctrl+: ⌃1&#10;&amp;kp N1"><span class="kt">1</span></div>
 <div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: 2&#10;ホールド: 2&#10;ダブルタップ: 2×2&#10;Shift+: ⇧2&#10;Ctrl+: ⌃2&#10;&amp;kp N2"><span class="kt">2</span></div>
@@ -194,7 +235,11 @@
 <div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 </div>
-<h3>VIM_NORMAL_BASE レイヤー</h3>
+</td>
+</tr>
+<tr>
+<th class="fig-layer">VIM_NORMAL_BASE</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃BS&#10;&amp;mm_vim_w"><span class="kt">⌃→</span></div>
@@ -239,7 +284,7 @@
 <div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 </div>
-<h3>VIM_NORMAL_BASE レイヤー（Tap Dance: ダブルタップ）</h3>
+<div class="fig-caption">Tap Dance: ダブルタップ</div>
 <div class="kb" style="width:676px;height:208px">
 <div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃BS&#10;&amp;mm_vim_w"></div>
@@ -284,7 +329,7 @@
 <div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 </div>
-<h3>VIM_NORMAL_BASE レイヤー（Mod Morph: Shift+）</h3>
+<div class="fig-caption">Mod Morph: Shift+</div>
 <div class="kb" style="width:676px;height:208px">
 <div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃BS&#10;&amp;mm_vim_w"></div>
@@ -329,7 +374,7 @@
 <div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 </div>
-<h3>VIM_NORMAL_BASE レイヤー（Mod Morph: Ctrl+）</h3>
+<div class="fig-caption">Mod Morph: Ctrl+</div>
 <div class="kb" style="width:676px;height:208px">
 <div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⌃→&#10;ホールド: ⌃→&#10;ダブルタップ: ⌃→×2&#10;Shift+: ⇧⌃→&#10;Ctrl+: ⌃BS&#10;&amp;mm_vim_w"><span class="kt">⌃BS</span></div>
@@ -374,7 +419,11 @@
 <div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 </div>
-<h3>VIM_NORMAL_SYM レイヤー</h3>
+</td>
+</tr>
+<tr>
+<th class="fig-layer">VIM_NORMAL_SYM</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
@@ -419,7 +468,7 @@
 <div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 </div>
-<h3>VIM_NORMAL_SYM レイヤー（Mod Morph: Shift+）</h3>
+<div class="fig-caption">Mod Morph: Shift+</div>
 <div class="kb" style="width:676px;height:208px">
 <div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"></div>
@@ -464,7 +513,11 @@
 <div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 </div>
-<h3>MOUSE_MOVE レイヤー</h3>
+</td>
+</tr>
+<tr>
+<th class="fig-layer">MOUSE_MOVE</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
@@ -509,7 +562,11 @@
 <div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 </div>
-<h3>MOUSE_SCROLL レイヤー</h3>
+</td>
+</tr>
+<tr>
+<th class="fig-layer">MOUSE_SCROLL</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
@@ -554,7 +611,11 @@
 <div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 </div>
-<h3>FUNCTION レイヤー</h3>
+</td>
+</tr>
+<tr>
+<th class="fig-layer">FUNCTION</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key" style="left:0px;top:0px;width:48px;height:48px" title="タップ: F1&#10;ホールド: F1&#10;ダブルタップ: F1×2&#10;Shift+: ⇧F1&#10;Ctrl+: ⌃F1&#10;&amp;kp F1"><span class="kt">F1</span></div>
 <div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: F2&#10;ホールド: F2&#10;ダブルタップ: F2×2&#10;Shift+: ⇧F2&#10;Ctrl+: ⌃F2&#10;&amp;kp F2"><span class="kt">F2</span></div>
@@ -599,7 +660,11 @@
 <div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 </div>
-<h3>BLUETOOTH レイヤー</h3>
+</td>
+</tr>
+<tr>
+<th class="fig-layer">BLUETOOTH</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key" style="left:0px;top:0px;width:48px;height:48px" title="タップ: BT0&#10;ホールド: BT0&#10;ダブルタップ: BT0&#10;Shift+: BT0&#10;Ctrl+: BT0&#10;&amp;bt BT_SEL 0"><span class="kt">BT0</span></div>
 <div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: BT1&#10;ホールド: BT1&#10;ダブルタップ: BT1&#10;Shift+: BT1&#10;Ctrl+: BT1&#10;&amp;bt BT_SEL 1"><span class="kt">BT1</span></div>
@@ -644,7 +709,11 @@
 <div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 </div>
-<h3>VIM_VISUAL_BASE レイヤー</h3>
+</td>
+</tr>
+<tr>
+<th class="fig-layer">VIM_VISUAL_BASE</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⇧⌃→&#10;ホールド: ⇧⌃→&#10;ダブルタップ: ⇧⌃→×2&#10;Shift+: ⇧⇧⌃→&#10;Ctrl+: ⌃⇧⌃→&#10;&amp;kp LS(LC(RIGHT))"><span class="kt">⇧⌃→</span></div>
@@ -689,7 +758,7 @@
 <div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 </div>
-<h3>VIM_VISUAL_BASE レイヤー（Tap Dance: ダブルタップ）</h3>
+<div class="fig-caption">Tap Dance: ダブルタップ</div>
 <div class="kb" style="width:676px;height:208px">
 <div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⇧⌃→&#10;ホールド: ⇧⌃→&#10;ダブルタップ: ⇧⌃→×2&#10;Shift+: ⇧⇧⌃→&#10;Ctrl+: ⌃⇧⌃→&#10;&amp;kp LS(LC(RIGHT))"></div>
@@ -734,7 +803,7 @@
 <div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 </div>
-<h3>VIM_VISUAL_BASE レイヤー（Mod Morph: Shift+）</h3>
+<div class="fig-caption">Mod Morph: Shift+</div>
 <div class="kb" style="width:676px;height:208px">
 <div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="タップ: ⇧⌃→&#10;ホールド: ⇧⌃→&#10;ダブルタップ: ⇧⌃→×2&#10;Shift+: ⇧⇧⌃→&#10;Ctrl+: ⌃⇧⌃→&#10;&amp;kp LS(LC(RIGHT))"></div>
@@ -779,7 +848,11 @@
 <div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 </div>
-<h3>VIM_VISUAL_SYM レイヤー</h3>
+</td>
+</tr>
+<tr>
+<th class="fig-layer">VIM_VISUAL_SYM</th>
+<td class="fig-cell">
 <div class="kb" style="width:676px;height:208px">
 <div class="key none" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
@@ -824,7 +897,7 @@
 <div class="key none" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 <div class="key none" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"><span class="kt"></span></div>
 </div>
-<h3>VIM_VISUAL_SYM レイヤー（Mod Morph: Shift+）</h3>
+<div class="fig-caption">Mod Morph: Shift+</div>
 <div class="kb" style="width:676px;height:208px">
 <div class="key dim" style="left:0px;top:0px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:52px;top:0px;width:48px;height:48px" title="&amp;none"></div>
@@ -869,6 +942,10 @@
 <div class="key dim" style="left:572px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 <div class="key dim" style="left:624px;top:156px;width:48px;height:48px" title="&amp;none"></div>
 </div>
+</td>
+</tr>
+</tbody>
+</table>
 <h2>動作</h2>
 <table>
 <thead>
