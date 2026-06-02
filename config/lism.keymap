@@ -24,24 +24,24 @@
  *    1    SYM         NUM_SYMBOL          数字・記号
  *    2    VIM_BASE    VIM_NORMAL_BASE     BASE 層に対応する Vim ノーマル
  *    3    VIM_SYM     VIM_NORMAL_SYM      SYM 層に対応する Vim ノーマル
- *    4    MOUS        MOUSE_MOVE          マウス移動
- *    5    SCRL        MOUSE_SCROLL        スクロール／クリック（MOUSE_MOVE の子）
+ *    4    VIM_VISUAL  VIM_VISUAL_BASE     BASE 層に対応する Vim ビジュアル
+ *    5    VIM_VIS_SYM VIM_VISUAL_SYM      SYM 層に対応する Vim ビジュアル
  *    6    FUNC        FUNCTION            ファンクションキー
  *    7    BT          BLUETOOTH           Bluetooth／出力切替
- *    8    VIM_VISUAL  VIM_VISUAL_BASE     BASE 層に対応する Vim ビジュアル
- *    9    VIM_VIS_SYM VIM_VISUAL_SYM      SYM 層に対応する Vim ビジュアル
+ *    8    MOUS        MOUSE_MOVE          マウス移動（AML・最上位）
+ *    9    SCRL        MOUSE_SCROLL        スクロール／クリック（MOUSE_MOVE の子）
  */
 
 #define BASE        0
 #define SYM         1
 #define VIM_BASE    2
 #define VIM_SYM     3
-#define MOUS        4
-#define SCRL        5
+#define VIM_VISUAL  4
+#define VIM_VIS_SYM 5
 #define FUNC        6
 #define BT          7
-#define VIM_VISUAL  8
-#define VIM_VIS_SYM 9
+#define MOUS        8
+#define SCRL        9
 
 &mt {
     quick-tap-ms = <0>;
@@ -438,21 +438,21 @@
             >;
         };
 
-        MOUSE_MOVE {
+        VIM_VISUAL_BASE {
             bindings = <
-&none  &none  &none  &none  &none                  &none  &none  &none     &none  &none
-&none  &none  &none  &none  &none                  &none  &none  &mo SCRL  &none  &none
-&none  &none  &none  &none  &none                  &none  &none  &none     &none  &none
-&none  &none  &none  &none  &none  &none    &none  &none  &none  &none     &none  &none
+&none           &kp LS(LC(RIGHT))      &kp LS(LC(RIGHT))      &none                   &none                                       &macro_vim_visual_y  &none         &none       &none          &macro_vim_visual_p
+&kp LCTRL       &none                  &macro_vim_visual_cut  &none                   &mm_vim_visual_g                            &kp LS(LEFT)         &kp LS(DOWN)  &kp LS(UP)  &kp LS(RIGHT)  &kp RCTRL
+&kp LEFT_SHIFT  &macro_vim_visual_cut  &none                  &macro_vim_visual_exit  &kp LS(LC(LEFT))                            &kp F3               &none         &none       &none          &kp RIGHT_SHIFT
+&none           &none                  &none                  &none                   &none             &mo VIM_VIS_SYM    &none  &mo VIM_VIS_SYM      &none         &none       &none          &none
             >;
         };
 
-        MOUSE_SCROLL {
+        VIM_VISUAL_SYM {
             bindings = <
-&none  &none  &none  &none  &none                  &none  &none     &none  &none     &none
-&none  &none  &none  &none  &none                  &none  &mkp MB1  &none  &mkp MB2  &none
-&none  &none  &none  &none  &none                  &none  &mkp MB4  &none  &mkp MB5  &none
-&none  &none  &none  &none  &none  &none    &none  &none  &none     &none  &none     &none
+&none           &none  &none  &mm_vim_visual_shift_4  &none                  &mm_vim_visual_shift_6  &none  &none  &none  &kp LS(HOME)
+&kp LCTRL       &none  &none  &none                   &none                  &kp LS(LEFT)            &none  &none  &none  &kp RCTRL
+&kp LEFT_SHIFT  &none  &none  &none                   &none                  &none                   &none  &none  &none  &kp RIGHT_SHIFT
+&none           &none  &none  &none                   &none  &none    &none  &none                   &none  &none  &none  &none
             >;
         };
 
@@ -474,21 +474,21 @@
             >;
         };
 
-        VIM_VISUAL_BASE {
+        MOUSE_MOVE {
             bindings = <
-&none           &kp LS(LC(RIGHT))      &kp LS(LC(RIGHT))      &none                   &none                                       &macro_vim_visual_y  &none         &none       &none          &macro_vim_visual_p
-&kp LCTRL       &none                  &macro_vim_visual_cut  &none                   &mm_vim_visual_g                            &kp LS(LEFT)         &kp LS(DOWN)  &kp LS(UP)  &kp LS(RIGHT)  &kp RCTRL
-&kp LEFT_SHIFT  &macro_vim_visual_cut  &none                  &macro_vim_visual_exit  &kp LS(LC(LEFT))                            &kp F3               &none         &none       &none          &kp RIGHT_SHIFT
-&none           &none                  &none                  &none                   &none             &mo VIM_VIS_SYM    &none  &mo VIM_VIS_SYM      &none         &none       &none          &none
+&none  &none  &none  &none  &none                  &none  &none  &none     &none  &none
+&none  &none  &none  &none  &none                  &none  &none  &mo SCRL  &none  &none
+&none  &none  &none  &none  &none                  &none  &none  &none     &none  &none
+&none  &none  &none  &none  &none  &none    &none  &none  &none  &none     &none  &none
             >;
         };
 
-        VIM_VISUAL_SYM {
+        MOUSE_SCROLL {
             bindings = <
-&none           &none  &none  &mm_vim_visual_shift_4  &none                  &mm_vim_visual_shift_6  &none  &none  &none  &kp LS(HOME)
-&kp LCTRL       &none  &none  &none                   &none                  &kp LS(LEFT)            &none  &none  &none  &kp RCTRL
-&kp LEFT_SHIFT  &none  &none  &none                   &none                  &none                   &none  &none  &none  &kp RIGHT_SHIFT
-&none           &none  &none  &none                   &none  &none    &none  &none                   &none  &none  &none  &none
+&none  &none  &none  &none  &none                  &none  &none     &none  &none     &none
+&none  &none  &none  &none  &none                  &none  &mkp MB1  &none  &mkp MB2  &none
+&none  &none  &none  &none  &none                  &none  &mkp MB4  &none  &mkp MB5  &none
+&none  &none  &none  &none  &none  &none    &none  &none  &none     &none  &none     &none
             >;
         };
     };
