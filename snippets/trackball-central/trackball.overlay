@@ -20,6 +20,7 @@
     scroller {
         layers = <9>;               // 9 = SCRL（スクロールレイヤー）
         input-processors =
+            <&zip_xy_transform INPUT_TRANSFORM_Y_INVERT>,  // 左TBスクロールの上下反転を解消
             <&zip_xy_to_scroll_mapper>,
             <&zip_scroll_scaler 1 16>;
     };
@@ -36,6 +37,7 @@
     scroller {
         layers = <9>;               // 9 = SCRL（スクロールレイヤー）
         input-processors =
+            <&zip_xy_transform INPUT_TRANSFORM_X_INVERT>,  // 右TBスクロールの左右反転を解消
             <&zip_xy_to_scroll_mapper>,
             <&zip_scroll_scaler 1 16>;
     };
