@@ -11,6 +11,43 @@ DYA Studio対応版は[dya-studio_zmk-v0.3](https://github.com/4mplelab/zmk-conf
 
 https://htmlpreview.github.io/?https://github.com/ryo-aoki-pc/zmk-config-LisM/blob/custom/KEYMAP.html
 
+## Vial キーマップへの変換 (Keyboard Quantizer Mini)
+
+このキーマップを [Keyboard Quantizer Mini](https://github.com/ryo-aoki-pc/vial-qmk-kq-mini)
+(USB キーボードコンバーター) 上で再現するため、
+[zmk-keymap-docgen の zmk_to_vial.py](https://github.com/ryo-aoki-pc/zmk-keymap-docgen)
+でファームウェアの EEPROM デフォルト (`.inc`) を生成し、上記リポジトリに同梱しています
+(フラッシュするだけで適用されます)。変換後の Vial キーマップは同リポジトリの
+`KEYMAP.html` で物理レイアウト表示として確認できます。
+
+| ファイル | 用途 |
+|---------|------|
+| `config/lism.vialmap.json` | 変換設定 (除外レイヤー・レイヤーキーの物理キー割当など) |
+
+### レイヤーキーの割当 (US 配列)
+
+BASE レイヤーでキーコードを持たないレイヤーキーは、接続したキーボードの以下のキーに割り当てています
+(`config/lism.vialmap.json` で変更可能):
+
+| ZMK | 接続キーボードのキー |
+|-----|--------------------|
+| `&mo SYM` (数字・記号レイヤー) | 右 Alt |
+| `&mo VIM_BASE` (Vim ノーマルモード) | CapsLock |
+| `&mo FUNC` (ファンクションレイヤー) | `` ` `` (Grave / 半角全角) |
+| `&mo BT` (Bluetooth レイヤー) | 割当なし (Quantizer では不要) |
+
+### 再生成方法
+
+```sh
+# zmk-keymap-docgen をクローンした場所を指定して実行
+# 本来の出力はファームウェア用の .inc。.vil / レポートは一時ファイルへ出力する。
+python3 ../zmk-keymap-docgen/zmk_to_vial.py config/lism.keymap \
+    -m config/lism.vialmap.json \
+    --inc ../vial-qmk-kq-mini/keyboards/sekigon/keyboard_quantizer/mini/keymaps/vial/zmk_keymap_defaults.inc \
+    --vil ../vial-qmk-kq-mini/keyboards/sekigon/keyboard_quantizer/mini/keymaps/vial/KEYMAP.vil \
+    --report /tmp/lism_vial_report.md
+```
+
 ## 命名規則（カスタムビヘイビア）
 
 `config/lism.keymap` の Macro / Tap Dance / Mod Morph は以下の規則で命名します。

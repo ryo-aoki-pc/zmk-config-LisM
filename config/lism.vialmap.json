@@ -1,0 +1,30 @@
+{
+  "keyboard": "sekigon/keyboard_quantizer/mini",
+  "layer_count": 8,
+
+  "exclude_layers": ["BLUETOOTH", "MOUSE_MOVE", "MOUSE_SCROLL"],
+
+  "identityless_positions": {
+    "&mo SYM": "RIGHT_ALT",
+    "&mo VIM_BASE": "CAPS_LOCK",
+    "&mo FUNC": "GRAVE",
+    "&mo BT": null
+  },
+
+  "carrier_start": 3,
+
+  "vial_uid": ["0x05", "0xE4", "0xA1", "0x7F", "0xDC", "0x87", "0xCB", "0x2A"],
+
+  "layout_options": 1,
+
+  "tapping_term_ms": 150,
+  "tap_dance_tapping_term_ms": 200,
+  "settings": {
+    "22": 1
+  },
+
+  "unmapped_keys": "passthrough",
+
+  "_comment_vil_emit_key_override": "キーオーバーライドのトリガーはキャリアのカスタムキーコード (QK_KB_3.. = USER03..) を使うため、vial.json でそれらを定義したファームウェア (vial-qmk-kq-mini PR #4) が必要。そのファームウェア前提で .vil にキーオーバーライドを含める。未対応ファームウェアの場合は false にして EEPROM デフォルト (.inc) から投入する。",
+  "vil_emit_key_override": true
+}
