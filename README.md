@@ -22,7 +22,7 @@ https://htmlpreview.github.io/?https://github.com/ryo-aoki-pc/zmk-config-LisM/bl
 
 | ファイル | 用途 |
 |---------|------|
-| `config/lism.vialmap.json` | 変換設定 (除外レイヤー・レイヤーキーの物理キー割当など) |
+| `config/lism.vialmap.json` | 変換設定 (除外レイヤー・レイヤーキーの物理キー割当・タップホールド設定など) |
 
 ### レイヤーキーの割当 (US 配列)
 
@@ -35,6 +35,26 @@ BASE レイヤーでキーコードを持たないレイヤーキーは、接続
 | `&mo VIM_BASE` (Vim ノーマルモード) | CapsLock |
 | `&mo FUNC` (ファンクションレイヤー) | `` ` `` (Grave / 半角全角) |
 | `&mo BT` (Bluetooth レイヤー) | 割当なし (Quantizer では不要) |
+
+### タップホールド (`&mt` / `&lt`) 設定の対応
+
+`lism.keymap` の `&mt` / `&lt` の設定 (`tapping-term-ms = <150>`、`quick-tap-ms = <0>`、
+`flavor = "balanced"`) は、`config/lism.vialmap.json` の `tapping_term_ms` と `settings` で
+Vial の QMK settings (QSID) に対応させています。生成される `.inc` / `.vil` は列挙した QSID しか
+書き込まず、未列挙の項目は変更されない (ファームウェア既定値、または Vial GUI で変更した値のまま) ため、
+タップホールド系はファームウェア既定値と同じものも含めて全て明示しています。
+
+| ZMK (`&mt` / `&lt`) | Vial QMK settings (QSID) | 値 |
+|---|---|---|
+| `tapping-term-ms = <150>` | 7 `tapping_term` (`tapping_term_ms`) | 150 |
+| `flavor = "balanced"` | 22 `permissive_hold` / 23 `hold_on_other_key_press` | 1 / 0 |
+| `quick-tap-ms = <0>` | 25 `quick_tap_term` | 0 |
+| `retro-tap` なし | 24 `retro_tapping` | 0 |
+| `hold-trigger-key-positions` なし | 26 `chordal_hold` | 0 |
+| `require-prior-idle-ms` なし | 27 `flow_tap_term` | 0 |
+
+25 `quick_tap_term` を明示しないと Quantizer 側はファームウェア既定の `TAPPING_TERM` (200 ms) のままになり、
+Space / Enter をタップした直後に押し続けたときに VIM_BASE / SYM レイヤーではなくキーリピートになります。
 
 ### 再生成方法
 
