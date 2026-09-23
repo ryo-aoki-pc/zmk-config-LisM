@@ -19,8 +19,14 @@
 
   "tapping_term_ms": 150,
   "tap_dance_tapping_term_ms": 200,
+  "_comment_settings": "lism.keymap の &mt / &lt (tapping-term-ms=150, quick-tap-ms=0, flavor=balanced; retro-tap / hold-trigger-key-positions / require-prior-idle-ms は未指定) を Vial の QMK settings (QSID) に対応させたもの。7=tapping_term は tapping_term_ms から入る。22=permissive_hold (1: balanced 相当) / 23=hold_on_other_key_press (0: hold-preferred ではない) / 24=retro_tapping (0) / 25=quick_tap_term (0 = quick-tap-ms 0。未指定だとファームウェア既定 TAPPING_TERM=200 となり、Space/Enter をタップ直後に押し続けるとレイヤーではなくキーリピートになる) / 26=chordal_hold (0: hold-trigger-key-positions なし) / 27=flow_tap_term (0: require-prior-idle-ms なし)。.inc / .vil は列挙した QSID しか書き込まず、未列挙は変更されない (ファームウェア既定値または Vial GUI での変更値のまま) ため、タップホールド系は既定値と同じものも含めて全て明示する。",
   "settings": {
-    "22": 1
+    "22": 1,
+    "23": 0,
+    "24": 0,
+    "25": 0,
+    "26": 0,
+    "27": 0
   },
 
   "unmapped_keys": "passthrough",
