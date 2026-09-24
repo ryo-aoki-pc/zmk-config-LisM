@@ -6,12 +6,10 @@
 #include <dt-bindings/zmk/pointing.h>
 
 /*
- * AroundFortyRB のキーマップを LisM (42キー) へ移植したもの。
- *
- * 物理レイアウトの違い（AroundFortyRB: 10/10/11/11、LisM: 10/10/10/12）は
- * 次のルールで吸収している:
- *   - AroundFortyRB の 3段目内側キー（&mo BT 等）→ LisM 最下段右の最内側親指キーへ移設
- *   - その他のキーは同じ行・同じ並びのまま
+ * このキーマップが各キーボード共通レイアウトの基準となる。
+ * LisM の物理レイアウトは 10/10/10/12 (42キー)。
+ * 他のキーボード (AroundFortyRB: 10/10/12/10、KUKEY42: 43キー、Pyuron: 10/10/12/8)
+ * へは、キー数差の吸収ルールを各リポジトリのキーマップ冒頭に明記したうえで移植する。
  *
  * レイヤー番号の別名定義。
  *   &mo / &lt / &to などの「経路（どのレイヤーへ移動するか）」を
@@ -63,6 +61,8 @@
 
     require-prior-idle-ms = <200>;
 };
+
+&mkp_input_listener { input-processors = <&zip_temp_layer MOUS 10000>; };
 
 / {
     combos { compatible = "zmk,combos"; };

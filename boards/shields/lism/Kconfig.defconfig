@@ -11,9 +11,6 @@ if SHIELD_LISM_L || SHIELD_LISM_R
     config ZMK_POINTING
         default y
 
-    config ZMK_MOUSE
-        default y
-    
     config PAW3222
         default y
     
