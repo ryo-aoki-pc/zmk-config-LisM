@@ -55,3 +55,14 @@ docker-compose.override.yml
 
 _west/
 firmware_builds/
+
+# ZMK/Zephyr west workspace (リポジトリ直下に作られた場合)
+zephyr/*
+!zephyr/module.yml
+.west/
+modules/
+
+# 生成物のスプレッドシート (KEYMAP.xlsx だけは追跡する)
+*.xls
+*.xlsx
+!KEYMAP.xlsx
