@@ -10,3 +10,4 @@
 *.gz binary
 *.jar binary
 *.zip binary
+*.xlsx binary
