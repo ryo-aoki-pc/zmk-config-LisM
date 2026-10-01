@@ -1,6 +1,59 @@
 name: Build ZMK firmware
 on: [push, pull_request, workflow_dispatch]
 
+# custom ブランチのビルド結果 (全 .uf2) は、固定タグ firmware-latest のプレリリースにも置く
+# (publish ジョブ)。次の URL から認証なしで取得でき、Artifacts と違って期限切れにならない:
+#   https://github.com/<owner>/<repo>/releases/download/firmware-latest/<artifact-name>.uf2
+#   https://github.com/<owner>/<repo>/releases/download/firmware-latest/BUILD_INFO.txt
+# zmk-config-keyboards の tools/flash-zmk.cmd はここから最新版を取得して書き込む。
+
 jobs:
   build:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3.0
+
+  publish:
+    name: Publish firmware-latest
+    # build-user-config.yml は全ビルドが成功したときだけ .uf2 を成果物 firmware にまとめる。
+    # 1 つでも失敗すると build が失敗になり、ここは動かない (一部だけの公開にはならない)。
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/custom'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: firmware-latest
+      cancel-in-progress: false
+
+    steps:
+      - name: Download firmware artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: firmware
+          path: firmware
+
+      - name: Write BUILD_INFO.txt
+        run: |
+          {
+            echo "repository: ${GITHUB_REPOSITORY}"
+            echo "branch: ${GITHUB_REF_NAME}"
+            echo "commit: ${GITHUB_SHA}"
+            echo "built: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > BUILD_INFO.txt
+          cat BUILD_INFO.txt
+          ls -l firmware
+
+      # タグごと作り直して、タグが常にこのビルドのコミットを指すようにする。
+      # プレリリースなので releases/latest や v* タグのリリース (release.yml) には影響しない。
+      - name: Replace firmware-latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release delete firmware-latest --cleanup-tag --yes || true
+          gh release create firmware-latest \
+            --target "${GITHUB_SHA}" \
+            --prerelease \
+            --title "Latest firmware (${GITHUB_REF_NAME} @ ${GITHUB_SHA::7})" \
+            --notes "custom ブランチの最新ビルド (build.yaml の全ファームウェア)。push のたびに自動で置き換わります。詳細は BUILD_INFO.txt を参照。" \
+            firmware/*.uf2 BUILD_INFO.txt
