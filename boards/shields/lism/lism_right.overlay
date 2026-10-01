@@ -7,3 +7,12 @@
 &transform_40keymap {
     col-offset = <5>;
 };
+
+// P を押したまま USB ケーブルを挿すと、ブートローダになる (src/usb_bootmagic.c)
+/ {
+    usb_bootmagic {
+        compatible = "zmk,usb-bootmagic";
+        row = <0>;
+        column = <4>;
+    };
+};
