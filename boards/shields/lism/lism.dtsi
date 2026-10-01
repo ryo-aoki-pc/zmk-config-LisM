@@ -202,6 +202,22 @@
         };
     };
 
+    // カーソルの加速 (zmk-input-processor-xy-accel)。ボールを転がす速さ (カウント/秒) に応じて
+    // 移動量に倍率 (1000 = 等倍) を掛ける。速さ 0 で min-factor、speed-threshold で等倍、
+    // speed-max 以上で max-factor になり、その間は直線で補間する。ゆっくり動かしたときは
+    // カーソルを細かく動かし、速く動かしたときは遠くまで動かす。
+    // 左右のトラックボールのリスナーで共有する (状態はリスナーごとに持つので、速さは混ざらない)。
+    // ゆっくり動かしたときに遅すぎれば min-factor を上げ、速く動かしたときに飛びすぎれば
+    // (Windows の「ポインターの精度を高める」と重なるときなど) max-factor を下げる (1000 で加速なし)
+    /omit-if-no-ref/ trackball_accel: trackball_accel {
+        compatible = "zmk,input-processor-xy-accel";
+        #input-processor-cells = <0>;
+        min-factor = <500>;
+        max-factor = <1300>;
+        speed-threshold = <1000>;
+        speed-max = <4000>;
+    };
+
     // ペリフェラル->セントラルのためのリスナー
     peripheral_listener: peripheral_listener {
         compatible = "zmk,input-listener";
