@@ -43,17 +43,57 @@ jobs:
           cat BUILD_INFO.txt
           ls -l firmware
 
-      # タグごと作り直して、タグが常にこのビルドのコミットを指すようにする。
+      # リリースは作り直すが、タグ firmware-latest は削除せず、このビルドのコミットへ付け替える。
+      # GitHub はタグの削除を後から非同期に処理し、そのとき同じタグ名のリリースを下書きに戻す。
+      # 以前のようにタグも消して (--cleanup-tag) すぐ作り直すと、作ったばかりの新しいリリースまで
+      # 下書きにされ、ダウンロード URL が 404 になることがあった。
       # プレリリースなので releases/latest や v* タグのリリース (release.yml) には影響しない。
       - name: Replace firmware-latest release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          TAG: firmware-latest
         run: |
-          gh release delete firmware-latest --cleanup-tag --yes || true
-          gh release create firmware-latest \
-            --target "${GITHUB_SHA}" \
+          if gh api "repos/${GH_REPO}/git/ref/tags/${TAG}" --silent 2>/dev/null; then
+            gh api -X PATCH "repos/${GH_REPO}/git/refs/tags/${TAG}" -f sha="${GITHUB_SHA}" -F force=true --silent \
+              || echo "::warning::タグ ${TAG} を ${GITHUB_SHA::7} に付け替えられなかったため、前のコミットのままリリースを作ります (中身のコミットは BUILD_INFO.txt を参照)"
+          else
+            gh api -X POST "repos/${GH_REPO}/git/refs" -f ref="refs/tags/${TAG}" -f sha="${GITHUB_SHA}" --silent
+          fi
+
+          # 下書きに戻されたものも含めて、このタグのリリースをすべて消す (タグは消さない)
+          for id in $(gh api --paginate "repos/${GH_REPO}/releases?per_page=100" \
+                        --jq ".[] | select(.tag_name == \"${TAG}\") | .id"); do
+            gh api -X DELETE "repos/${GH_REPO}/releases/${id}" --silent
+          done
+
+          gh release create "${TAG}" \
+            --verify-tag \
             --prerelease \
             --title "Latest firmware (${GITHUB_REF_NAME} @ ${GITHUB_SHA::7})" \
             --notes "custom ブランチの最新ビルド (build.yaml の全ファームウェア)。push のたびに自動で置き換わります。詳細は BUILD_INFO.txt を参照。" \
             firmware/*.uf2 BUILD_INFO.txt
+
+      # 認証なしで今回のビルドを取得できるかを確かめる。下書きになっていたら公開し直し、
+      # それでも取得できなければジョブを失敗させる (flash-zmk.cmd が 404 になる状態を見逃さない)。
+      - name: Verify firmware-latest is downloadable
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: firmware-latest
+        run: |
+          url="${GITHUB_SERVER_URL}/${GH_REPO}/releases/download/${TAG}/BUILD_INFO.txt"
+          for i in 1 2 3 4 5 6; do
+            if curl -fsSL "${url}" | grep -qx "commit: ${GITHUB_SHA}"; then
+              echo "OK: ${url}"
+              exit 0
+            fi
+            for id in $(gh api --paginate "repos/${GH_REPO}/releases?per_page=100" \
+                          --jq ".[] | select(.tag_name == \"${TAG}\" and .draft) | .id"); do
+              echo "::warning::${TAG} リリース (${id}) が下書きになっているため公開し直します"
+              gh api -X PATCH "repos/${GH_REPO}/releases/${id}" -F draft=false --silent
+            done
+            sleep 10
+          done
+          echo "::error::${url} から今回のビルド (${GITHUB_SHA::7}) を取得できません"
+          exit 1
