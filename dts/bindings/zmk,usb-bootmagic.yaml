@@ -1,0 +1,17 @@
+description: |
+  このキーを押したまま USB ケーブルを挿すと、その半分をブートローダ (UF2) で再起動する
+  (QMK の Bootmagic と同じ使い方)。キーの押下と USB 給電の検出をその半分の中で判定するので、
+  分割キーボードのペリフェラルでも、セントラルの電源や接続が無くても使える。
+  左右それぞれの overlay に 1 つずつ置く (1 つのファームウェアに 1 つだけ)。
+
+compatible: "zmk,usb-bootmagic"
+
+properties:
+  row:
+    type: int
+    required: true
+    description: その半分の kscan 上の行 (matrix transform の RC(row, column) の row から row-offset を引いた値)
+  column:
+    type: int
+    required: true
+    description: その半分の kscan 上の列 (matrix transform の RC(row, column) の column から col-offset を引いた値)

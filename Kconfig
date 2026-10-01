@@ -1,0 +1,4 @@
+config ZMK_USB_BOOTMAGIC
+    bool "Reboot into the bootloader when USB is connected while a key is held"
+    default y
+    depends on DT_HAS_ZMK_USB_BOOTMAGIC_ENABLED && USB_DEVICE_STACK
