@@ -67,6 +67,9 @@
         17 // K (&mo SCRL)
     >;
 
+    // キーを押した・離したあと、この時間はボールを動かしても AML にしない。トラックボールのリスナーの
+    // aml_threshold (lism.dtsi) もこの値を使い、すべてのキーの押下と解放を数える
+    // (zip_temp_layer 自身はキーコードの押下しか数えない)
     require-prior-idle-ms = <200>;
 };
 
