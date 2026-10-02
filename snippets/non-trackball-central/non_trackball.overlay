@@ -7,7 +7,7 @@
     status = "okay";
     input-processors =
         <&trackball_accel>,         // 速さに応じた倍率（カーソルの加速）
-        <&zip_temp_layer 8 10000>;  // 8 = MOUS（マウス移動レイヤーを自動有効化）
+        <&aml_threshold 8 10000>;   // 8 = MOUS（マウス移動レイヤーを自動有効化。わずかな動きでは発動しない）
 
     scroller {
         layers = <9>;               // 9 = SCRL（スクロールレイヤー）

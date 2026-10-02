@@ -218,6 +218,20 @@
         speed-max = <4000>;
     };
 
+    // AML の発動条件 (zmk-input-processor-aml-threshold)。リスナーで zip_temp_layer の代わりに使い、
+    // キー入力の振動などでボールがわずかに動いても AML (MOUS) にしない。止まっていた状態から動いた量
+    // (X と Y それぞれ向き付きで足すので、行ったり来たりする振動は打ち消し合う) の大きさが threshold
+    // (加速の後の値 = カーソルの移動量) に達したら zip_temp_layer に渡す。キーを押した・離したあと
+    // require-prior-idle-ms (lism.keymap の zip_temp_layer の値) の間も渡さない。
+    // 左右のトラックボールのリスナーで共有する (状態はリスナーごとに持つ)。
+    // まだ振動で AML になるなら threshold を上げ、少し動かしただけでは AML にならないなら下げる
+    /omit-if-no-ref/ aml_threshold: aml_threshold {
+        compatible = "zmk,input-processor-aml-threshold";
+        #input-processor-cells = <2>;
+        temp-layer = <&zip_temp_layer>;
+        threshold = <10>;
+    };
+
     // ペリフェラル->セントラルのためのリスナー
     peripheral_listener: peripheral_listener {
         compatible = "zmk,input-listener";

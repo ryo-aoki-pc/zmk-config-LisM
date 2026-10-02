@@ -28,5 +28,9 @@ manifest:
     - name: zmk-input-processor-xy-accel
       remote: ryo-aoki-pc
       revision: a5233f76a88b369dfebc37371f8244c89df2d0d4
+    # キー入力の振動などでボールがわずかに動いても AML を発動させない入力プロセッサ (lism.dtsi の aml_threshold)
+    - name: zmk-input-processor-aml-threshold
+      remote: ryo-aoki-pc
+      revision: 98f317118e81c6fe9df5e88fc5acc554ecbc9af1
   self:
     path: config
