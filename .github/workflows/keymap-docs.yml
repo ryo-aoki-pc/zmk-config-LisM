@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'config/lism.keymap'
+      - 'config/lism.json'
       - 'tools/keymap-docgen'
       - '.gitmodules'
       - '.github/workflows/keymap-docs.yml'

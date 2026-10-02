@@ -197,7 +197,7 @@ GitHub Actionsの`build-user-config.yml`に近いフローをVS Code Devcontaine
   - `_west/config/west.yml` は `config/west.yml` へのシンボリックリンク
 - **スクリプト**:
   - `scripts/build-matrix.sh`: `build.yaml`のinclude行列を一括ビルド
-  - `scripts/build-single-select.sh`: `build.yaml`のエントリをメニュー化して選択ビルド
+  - `scripts/build-single.sh`: `build.yaml`のエントリをメニュー化して選択ビルド
   - `scripts/lib/build-helpers.sh`: 複数シールド対応、成果物コピーの共通ロジック
   - `scripts/west-common.sh`: パス設定とツールチェック
 - **成果物**:
@@ -213,8 +213,9 @@ make setup-west
 
 ### コマンド一覧
 - `make setup-west`: ワークスペースの初期セットアップ
-- `make` / `make matrix`: `build.yaml`に基づき全ファームウェアをビルド
-- `make single` / `make single-select`: ビルドするファームウェアを選択
+- `make` / `make all_p`: `build.yaml`に基づき全ファームウェア (ZMK Studio 版を除く) を並列でビルド (`make all` は逐次)
+- `make all_studio_p` / `make all_studio`: ZMK Studio 版も含めて全ファームウェアをビルド (並列 / 逐次)
+- `make single`: ビルドするファームウェアを選択
 - `make clean`: `firmware_builds` フォルダを削除
 
 ### FAQ
