@@ -85,7 +85,11 @@ python3 ../zmk-keymap-docgen/zmk_to_vial.py config/lism.keymap \
 | `lism_right_central_trackball.uf2`            | 右側 セントラル トラックボール         |
 | `lism_right_central_non_trackball_studio.uf2` | 右側 セントラル 非トラックボール (ZMK Studio 対応) |
 | `lism_right_central_trackball_studio.uf2`     | 右側 セントラル トラックボール (ZMK Studio 対応)   |
+| `lism_right_central_non_trackball_logging.uf2` | 右側 セントラル 非トラックボール (ログ版) |
+| `lism_right_central_trackball_logging.uf2`    | 右側 セントラル トラックボール (ログ版) |
 | `settings_reset-seeeduino_xiao_ble-zmk.uf2`   | 設定リセット用                        |
+
+`_logging` 版は、USB の COM ポートにデバッグログ (`zmk-usb-logging`) を出すセントラルです。ZMK Studio は入っていません。[zmk-config-keyboards](https://github.com/ryo-aoki-pc/zmk-config-keyboards) の `tools/keyboard-check.cmd` の「レイヤーの動きを見る」で、押したキーのレイヤーの遷移と解決を表示するのに使います。調べ終わったら通常版に戻してください。ローカルビルドでは Studio 版と同じく `make` / `make all` では作らず、`make all_studio_p` / `make all_studio` で作ります。
 
 ## ローカルビルド手順
 
