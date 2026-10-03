@@ -34,17 +34,55 @@ include:
 
   # ログ版 (USB の COM ポートにデバッグログを出す。Studio は入らない)。zmk-config-keyboards の
   # tools/keyboard-check.cmd の「レイヤーの動きを見る」で、押したキーのレイヤーの遷移と解決を表示するのに使う。
-  # ボールを動かすと入力プロセッサのログが増えるので、ログのバッファを大きくする
+  # ボールを動かすと入力プロセッサのログが増えるので、ログのバッファを大きくする。
+  # ログを出すとスレッドのスタックの使用量も増え、ZMK の既定のサイズでは溢れる (KUKEY42 では、入力スレッドが
+  # 576 バイト使い、セントラルの既定の 512 バイトを超えて、起動から数秒でキーもボールも止まった。ほかの
+  # スレッドも既定のサイズの 8 割ほどまで使う)。ログ版だけ、
+  # ZMK のコードが動くスレッドのスタックを 2048 (システムのワークキューと BT の受信スレッドは 3072) にし、
+  # thread analyzer でスレッドごとのスタックの最大使用量を 30 秒ごとにログに出す (<inf> thread_analyzer: の行)。
+  # ログ版の cmake-args は、zmk-config-keyboards の ZMK の 6 リポジトリで揃える
   - board: seeeduino_xiao_ble
     shield: lism_right rgbled_adapter
     artifact-name: lism_right_central_non_trackball_logging
     snippet: "zmk-usb-logging non-trackball-central"
-    cmake-args: -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_LOG_BUFFER_SIZE=32768
+    cmake-args: >-
+      -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y
+      -DCONFIG_LOG_BUFFER_SIZE=32768
+      -DCONFIG_INPUT_THREAD_STACK_SIZE=2048
+      -DCONFIG_ZMK_BLE_THREAD_STACK_SIZE=2048
+      -DCONFIG_ZMK_LOW_PRIORITY_THREAD_STACK_SIZE=2048
+      -DCONFIG_ZMK_SPLIT_BLE_CENTRAL_SPLIT_RUN_STACK_SIZE=2048
+      -DCONFIG_LOG_PROCESS_THREAD_STACK_SIZE=2048
+      -DCONFIG_MAIN_STACK_SIZE=2048
+      -DCONFIG_USB_WORKQUEUE_STACK_SIZE=2048
+      -DCONFIG_SYSTEM_WORKQUEUE_STACK_SIZE=3072
+      -DCONFIG_BT_RX_STACK_SIZE=3072
+      -DCONFIG_THREAD_NAME=y
+      -DCONFIG_THREAD_ANALYZER=y
+      -DCONFIG_THREAD_ANALYZER_USE_LOG=y
+      -DCONFIG_THREAD_ANALYZER_AUTO=y
+      -DCONFIG_THREAD_ANALYZER_AUTO_INTERVAL=30
   - board: seeeduino_xiao_ble
     shield: lism_right rgbled_adapter
     artifact-name: lism_right_central_trackball_logging
     snippet: "zmk-usb-logging trackball-central"
-    cmake-args: -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_LOG_BUFFER_SIZE=32768
+    cmake-args: >-
+      -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y
+      -DCONFIG_LOG_BUFFER_SIZE=32768
+      -DCONFIG_INPUT_THREAD_STACK_SIZE=2048
+      -DCONFIG_ZMK_BLE_THREAD_STACK_SIZE=2048
+      -DCONFIG_ZMK_LOW_PRIORITY_THREAD_STACK_SIZE=2048
+      -DCONFIG_ZMK_SPLIT_BLE_CENTRAL_SPLIT_RUN_STACK_SIZE=2048
+      -DCONFIG_LOG_PROCESS_THREAD_STACK_SIZE=2048
+      -DCONFIG_MAIN_STACK_SIZE=2048
+      -DCONFIG_USB_WORKQUEUE_STACK_SIZE=2048
+      -DCONFIG_SYSTEM_WORKQUEUE_STACK_SIZE=3072
+      -DCONFIG_BT_RX_STACK_SIZE=3072
+      -DCONFIG_THREAD_NAME=y
+      -DCONFIG_THREAD_ANALYZER=y
+      -DCONFIG_THREAD_ANALYZER_USE_LOG=y
+      -DCONFIG_THREAD_ANALYZER_AUTO=y
+      -DCONFIG_THREAD_ANALYZER_AUTO_INTERVAL=30
 
 # Central = Left
   # - board: seeeduino_xiao_ble
