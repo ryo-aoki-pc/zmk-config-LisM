@@ -117,9 +117,9 @@ matched_indices=()
 for idx in $(seq 0 $((COUNT - 1))); do
   ARTIFACT_NAME_CFG="$(yq -r ".include[${idx}].[\"artifact-name\"] // \"\"" "${BUILD_MATRIX_PATH}")"
 
-  # フィルタ判定（artifact-name に studio を含むか）
+  # フィルタ判定（artifact-name に studio を含むか。ログ版 (_logging) も同じ扱い）
   is_studio_entry=false
-  if [[ "${ARTIFACT_NAME_CFG}" == *studio* ]]; then
+  if [[ "${ARTIFACT_NAME_CFG}" == *studio* || "${ARTIFACT_NAME_CFG}" == *_logging ]]; then
     is_studio_entry=true
   fi
 
