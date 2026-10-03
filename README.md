@@ -217,8 +217,8 @@ make setup-west
 
 ### コマンド一覧
 - `make setup-west`: ワークスペースの初期セットアップ
-- `make` / `make all_p`: `build.yaml`に基づき全ファームウェア (ZMK Studio 版を除く) を並列でビルド (`make all` は逐次)
-- `make all_studio_p` / `make all_studio`: ZMK Studio 版も含めて全ファームウェアをビルド (並列 / 逐次)
+- `make` / `make all_p`: `build.yaml`に基づき全ファームウェア (ZMK Studio 版・ログ版を除く) を並列でビルド (`make all` は逐次)
+- `make all_studio_p` / `make all_studio`: ZMK Studio 版・ログ版も含めて全ファームウェアをビルド (並列 / 逐次)
 - `make single`: ビルドするファームウェアを選択
 - `make clean`: `firmware_builds` フォルダを削除
 
