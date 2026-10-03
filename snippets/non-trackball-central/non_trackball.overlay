@@ -12,6 +12,8 @@
     scroller {
         layers = <9>;               // 9 = SCRL（スクロールレイヤー）
         input-processors =
+            <&zip_temp_layer 8 10000>,                     // 8 = MOUS（スクロール中も MOUS を維持する）
+            <&zip_xy_transform INPUT_TRANSFORM_Y_INVERT>,  // 左TBスクロールの上下反転を解消（trackball-central と同じ）
             <&zip_xy_to_scroll_mapper>,
             <&zip_scroll_scaler 1 16>;
     };
