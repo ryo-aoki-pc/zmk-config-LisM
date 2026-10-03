@@ -89,7 +89,7 @@ python3 ../zmk-keymap-docgen/zmk_to_vial.py config/lism.keymap \
 | `lism_right_central_trackball_logging.uf2`    | 右側 セントラル トラックボール (ログ版) |
 | `settings_reset-seeeduino_xiao_ble-zmk.uf2`   | 設定リセット用                        |
 
-`_logging` 版は、USB の COM ポートにデバッグログ (`zmk-usb-logging`) を出すセントラルです。ZMK Studio は入っていません。[zmk-config-keyboards](https://github.com/ryo-aoki-pc/zmk-config-keyboards) の `tools/keyboard-check.cmd` の「レイヤーの動きを見る」で、押したキーのレイヤーの遷移と解決を表示するのに使います。調べ終わったら通常版に戻してください。ローカルビルドでは Studio 版と同じく `make` / `make all` では作らず、`make all_studio_p` / `make all_studio` で作ります。
+`_logging` 版は、USB の COM ポートにデバッグログ (`zmk-usb-logging`) を出すセントラルです。ZMK Studio は入っていません。[zmk-config-keyboards](https://github.com/ryo-aoki-pc/zmk-config-keyboards) の `tools/keyboard-check.cmd` の「レイヤーの動きを見る」で、押したキーのレイヤーの遷移と解決を表示するのに使います。ログを出すとスレッドのスタックの使用量が増えるので、ログ版だけスタックを大きくし、スレッドごとのスタックの最大使用量を 30 秒ごとにログに出します (`<inf> thread_analyzer:` の行。設定は `build.yaml`)。調べ終わったら通常版に戻してください。ローカルビルドでは Studio 版と同じく `make` / `make all` では作らず、`make all_studio_p` / `make all_studio` で作ります。
 
 ## ローカルビルド手順
 
