@@ -1,0 +1,28 @@
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: |
+  Custom charge status indicator.
+  Detects charging state from a GPIO pin. This binding is intended to be used
+  with a `chg_stat` alias in the board's devicetree.
+
+compatible: "custom,chg-stat"
+
+properties:
+  gpios:
+    type: phandle-array
+    required: true
+    description: |
+      Specifies the GPIO pin connected to the charge status (STAT) signal.
+      The driver configures this pin as an input with a pull-up and reads the raw level.
+      A raw level of '0' indicates charging, while '1' indicates not charging.
+      Any flags provided in the phandle (e.g., GPIO_ACTIVE_LOW) are ignored by this driver's logic,
+      but may be useful for documenting the hardware connection.
+
+      Example in a board's .dts file:
+      / {
+          chg_stat: chg_stat {
+              compatible = "custom,chg-stat";
+              gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
+          };
+      };

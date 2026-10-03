@@ -2,3 +2,84 @@ config ZMK_USB_BOOTMAGIC
     bool "Reboot into the bootloader when USB is connected while a key is held"
     default y
     depends on DT_HAS_ZMK_USB_BOOTMAGIC_ENABLED && USB_DEVICE_STACK
+
+# 充電中の LED 表示 (src/charge_indicator.c。4mplelab/zmk-feature-charge-indicator から取り込んだもの)
+menu "Charge Indicator"
+
+config CHARGE_INDICATOR
+    bool "Enable charge status LED indicator"
+    default n
+
+config CHG_POLICY
+    bool "Force off during charging (suppress widget)"
+    default n
+    help
+      y: While charging, force LEDs OFF and suppress widget output.
+      n: While charging, show selected color (CHG_COLOR) and suppress widget output.
+
+config CHG_COLOR
+    int "Charging color value (0-7)"
+    range 0 7
+    default 1
+    help
+      0 Black, 1 Red, 2 Green, 3 Yellow, 4 Blue, 5 Magenta, 6 Cyan, 7 White
+
+config CHG_BATTERY_LEVEL_BASED_COLOR
+    bool "Use battery level based color instead of fixed color"
+    default y
+    help
+      y: LED color changes based on battery level while charging.
+      n: Use fixed color (CONFIG_CHG_COLOR) while charging.
+
+if CHG_BATTERY_LEVEL_BASED_COLOR
+
+config CHG_BATTERY_LEVEL_HIGH
+    int "High battery level percentage"
+    default 80
+
+config CHG_BATTERY_LEVEL_LOW
+    int "Low battery level percentage"
+    default 20
+
+config CHG_BATTERY_LEVEL_CRITICAL
+    int "Critical battery level percentage"
+    default 5
+
+config CHG_BATTERY_COLOR_HIGH
+    int "Color for high battery level (above LEVEL_HIGH)"
+    range 0 7
+    default 2
+    help
+      0 Black, 1 Red, 2 Green, 3 Yellow, 4 Blue, 5 Magenta, 6 Cyan, 7 White
+
+config CHG_BATTERY_COLOR_MEDIUM
+    int "Color for medium battery level (between LEVEL_LOW and LEVEL_HIGH)"
+    range 0 7
+    default 3
+    help
+      0 Black, 1 Red, 2 Green, 3 Yellow, 4 Blue, 5 Magenta, 6 Cyan, 7 White
+
+config CHG_BATTERY_COLOR_LOW
+    int "Color for low battery level (below LEVEL_LOW)"
+    range 0 7
+    default 1
+    help
+      0 Black, 1 Red, 2 Green, 3 Yellow, 4 Blue, 5 Magenta, 6 Cyan, 7 White
+
+config CHG_BATTERY_COLOR_CRITICAL
+    int "Color for critical battery level (below LEVEL_CRITICAL)"
+    range 0 7
+    default 5
+    help
+      0 Black, 1 Red, 2 Green, 3 Yellow, 4 Blue, 5 Magenta, 6 Cyan, 7 White
+
+config CHG_BATTERY_COLOR_MISSING
+    int "Color for battery not detected"
+    range 0 7
+    default 0
+    help
+      0 Black, 1 Red, 2 Green, 3 Yellow, 4 Blue, 5 Magenta, 6 Cyan, 7 White
+
+endif
+
+endmenu
