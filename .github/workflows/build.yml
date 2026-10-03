@@ -1,20 +1,23 @@
 name: Build ZMK firmware
 on: [push, pull_request, workflow_dispatch]
 
-# custom ブランチのビルド結果 (全 .uf2) は、固定タグ firmware-latest のプレリリースにも置く
-# (publish ジョブ)。次の URL から認証なしで取得でき、Artifacts と違って期限切れにならない:
-#   https://github.com/<owner>/<repo>/releases/download/firmware-latest/<artifact-name>.uf2
-#   https://github.com/<owner>/<repo>/releases/download/firmware-latest/BUILD_INFO.txt
-# zmk-config-keyboards の tools/flash-zmk.cmd はここから最新版を取得して書き込む。
+# ビルド結果 (build.yaml の全 .uf2) は、次のタグのプレリリースにも置く (.github/scripts/firmware-release.sh)。
+# 認証なしで取得でき、Artifacts と違って期限切れにならない:
+#   firmware-latest         custom ブランチの最新ビルド (push のたびに置き換える)
+#   firmware-custom-<sha7>  custom ブランチのビルドの履歴 (新しいものから 30 件を残す)
+#   firmware-pr-<番号>      PR のビルド (PR に push するたびに置き換える。新しいものから 30 件を残す)
+#   https://github.com/<owner>/<repo>/releases/download/<タグ>/<artifact-name>.uf2
+#   https://github.com/<owner>/<repo>/releases/download/<タグ>/BUILD_INFO.txt
+# zmk-config-keyboards の tools/flash.cmd は、ここから選んだビルドを書き込む。
+# build-user-config.yml は全ビルドが成功したときだけ .uf2 を成果物 firmware にまとめる。
+# 1 つでも失敗すると build が失敗になり、公開のジョブは動かない (一部だけの公開にはならない)。
 
 jobs:
   build:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3.0
 
-  publish:
+  publish-latest:
     name: Publish firmware-latest
-    # build-user-config.yml は全ビルドが成功したときだけ .uf2 を成果物 firmware にまとめる。
-    # 1 つでも失敗すると build が失敗になり、ここは動かない (一部だけの公開にはならない)。
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/custom'
     needs: build
     runs-on: ubuntu-latest
@@ -23,77 +26,86 @@ jobs:
     concurrency:
       group: firmware-latest
       cancel-in-progress: false
-
     steps:
-      - name: Download firmware artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
         with:
           name: firmware
           path: firmware
-
-      - name: Write BUILD_INFO.txt
-        run: |
-          {
-            echo "repository: ${GITHUB_REPOSITORY}"
-            echo "branch: ${GITHUB_REF_NAME}"
-            echo "commit: ${GITHUB_SHA}"
-            echo "built: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            echo "run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          } > BUILD_INFO.txt
-          cat BUILD_INFO.txt
-          ls -l firmware
-
-      # リリースは作り直すが、タグ firmware-latest は削除せず、このビルドのコミットへ付け替える。
-      # GitHub はタグの削除を後から非同期に処理し、そのとき同じタグ名のリリースを下書きに戻す。
-      # 以前のようにタグも消して (--cleanup-tag) すぐ作り直すと、作ったばかりの新しいリリースまで
-      # 下書きにされ、ダウンロード URL が 404 になることがあった。
-      # プレリリースなので releases/latest や v* タグのリリース (release.yml) には影響しない。
-      - name: Replace firmware-latest release
+      - name: Publish firmware-latest
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          TAG: firmware-latest
-        run: |
-          if gh api "repos/${GH_REPO}/git/ref/tags/${TAG}" --silent 2>/dev/null; then
-            gh api -X PATCH "repos/${GH_REPO}/git/refs/tags/${TAG}" -f sha="${GITHUB_SHA}" -F force=true --silent \
-              || echo "::warning::タグ ${TAG} を ${GITHUB_SHA::7} に付け替えられなかったため、前のコミットのままリリースを作ります (中身のコミットは BUILD_INFO.txt を参照)"
-          else
-            gh api -X POST "repos/${GH_REPO}/git/refs" -f ref="refs/tags/${TAG}" -f sha="${GITHUB_SHA}" --silent
-          fi
+          BRANCH: ${{ github.ref_name }}
+          HEAD_SHA: ${{ github.sha }}
+          DESCRIPTION: build.yaml の全ファームウェア
+        run: bash .github/scripts/firmware-release.sh latest firmware/*.uf2
 
-          # 下書きに戻されたものも含めて、このタグのリリースをすべて消す (タグは消さない)
-          for id in $(gh api --paginate "repos/${GH_REPO}/releases?per_page=100" \
-                        --jq ".[] | select(.tag_name == \"${TAG}\") | .id"); do
-            gh api -X DELETE "repos/${GH_REPO}/releases/${id}" --silent
-          done
-
-          gh release create "${TAG}" \
-            --verify-tag \
-            --prerelease \
-            --title "Latest firmware (${GITHUB_REF_NAME} @ ${GITHUB_SHA::7})" \
-            --notes "custom ブランチの最新ビルド (build.yaml の全ファームウェア)。push のたびに自動で置き換わります。詳細は BUILD_INFO.txt を参照。" \
-            firmware/*.uf2 BUILD_INFO.txt
-
-      # 認証なしで今回のビルドを取得できるかを確かめる。下書きになっていたら公開し直し、
-      # それでも取得できなければジョブを失敗させる (flash-zmk.cmd が 404 になる状態を見逃さない)。
-      - name: Verify firmware-latest is downloadable
+  # 待機中のジョブは、同じグループの新しいジョブに取り消されるので、コミットごとにグループを分ける
+  # (続けて push しても、それぞれのビルドが履歴に残る)
+  publish-custom:
+    name: Publish firmware-custom
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/custom'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: firmware-custom-${{ github.sha }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: firmware
+          path: firmware
+      - name: Publish firmware-custom-<sha7>
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          TAG: firmware-latest
-        run: |
-          url="${GITHUB_SERVER_URL}/${GH_REPO}/releases/download/${TAG}/BUILD_INFO.txt"
-          for i in 1 2 3 4 5 6; do
-            if curl -fsSL "${url}" | grep -qx "commit: ${GITHUB_SHA}"; then
-              echo "OK: ${url}"
-              exit 0
-            fi
-            for id in $(gh api --paginate "repos/${GH_REPO}/releases?per_page=100" \
-                          --jq ".[] | select(.tag_name == \"${TAG}\" and .draft) | .id"); do
-              echo "::warning::${TAG} リリース (${id}) が下書きになっているため公開し直します"
-              gh api -X PATCH "repos/${GH_REPO}/releases/${id}" -F draft=false --silent
-            done
-            sleep 10
-          done
-          echo "::error::${url} から今回のビルド (${GITHUB_SHA::7}) を取得できません"
-          exit 1
+          BRANCH: ${{ github.ref_name }}
+          HEAD_SHA: ${{ github.sha }}
+          DESCRIPTION: build.yaml の全ファームウェア
+          KEEP: '30'
+        run: bash .github/scripts/firmware-release.sh custom firmware/*.uf2
+
+  # 同じリポジトリのブランチからの PR だけ (fork と Dependabot の PR は書き込み権限が無い)
+  publish-pr:
+    name: Publish firmware-pr
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: firmware-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: firmware
+          path: firmware
+      - name: Publish firmware-pr-<number>
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          DESCRIPTION: build.yaml の全ファームウェア
+          KEEP: '30'
+        run: bash .github/scripts/firmware-release.sh pr firmware/*.uf2
