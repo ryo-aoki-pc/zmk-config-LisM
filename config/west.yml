@@ -6,8 +6,6 @@ manifest:
       url-base: https://github.com/sekigon-gonnoc
     - name: caksoylar
       url-base: https://github.com/caksoylar
-    - name: 4mplelab
-      url-base: https://github.com/4mplelab
     - name: ryo-aoki-pc
       url-base: https://github.com/ryo-aoki-pc
   projects:
@@ -21,9 +19,8 @@ manifest:
     - name: zmk-rgbled-widget
       remote: caksoylar
       revision: v0.3
-    - name: zmk-feature-charge-indicator
-      remote: 4mplelab
-      revision: main
+    # 充電中の LED 表示 (CONFIG_CHARGE_INDICATOR) は、4mplelab/zmk-feature-charge-indicator を直して
+    # このリポジトリの src/charge_indicator.c に取り込んだ (割り込みの中で眠っていて、USB 接続時に操作できなくなっていた)
     # トラックボールの速さに応じてカーソルに倍率を掛ける入力プロセッサ (lism.dtsi の trackball_accel)
     - name: zmk-input-processor-xy-accel
       remote: ryo-aoki-pc
